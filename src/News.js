@@ -1,44 +1,44 @@
 import React, {Component, useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, ScrollView} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
+import axios from "axios";
+
+const URL = 'http://192.168.0.3:58083'
 
 export default class News extends Component {
 
   constructor(props){
     super(props);
     this.state={
-      datas: [
-        {header: "제목1", body:"본문1", issueDate: '2024-02-04', publisher: '동아일보', author:'이동진', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        {header: "제목2", body:"본문2", issueDate: '2024-02-04', publisher: '조선일보', author:'박지연', img:'require(그림경로)'},
-        
-      ],
+      datas: [],
       isModalVisible: false,
       selectedItem: null
     };
   }
 
+  componentDidMount(){
+    axios.post(`${URL}/news/search-native`, {}).then((response)=>{
+      this.setState({datas: response.data});
+    });
+  }
+  
   toggleModal = (item) => {
     this.setState({
       isModalVisible: !this.state.isModalVisible
     });
     this.setState({selectedItem: item});
   };
+
+  appendData = () => {
+    if(this.state.datas.length > 0){
+      const param = {"searchAfter": this.state.datas[this.state.datas.length-1].sort};
+      axios.post(`${URL}/news/search-native`, param).then((response)=>{
+        const d = [...this.state.datas, ...response.data];
+        this.setState({datas: d});
+      })
+      .catch(error => console.log("testbug1: " + error));
+    }
+  }
 
   render() {
     return (
@@ -47,6 +47,8 @@ export default class News extends Component {
         <FlashList
           data={this.state.datas}
           renderItem={this.renderItem}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => { this.appendData()}}
           estimatedItemSize={200}
         />
         {this.state.isModalVisible && this.popupItem()}
@@ -59,11 +61,11 @@ export default class News extends Component {
       <TouchableOpacity style={style.listView} onPress={() => this.toggleModal(item)}>
           {/* <Image source={item.img} style={style.listImg}></Image> */}
           <View style={{flexDirection:'column'}}>
-              <Text style={style.listHeader}>{item.header}</Text>
-              <Text style={style.itemBody}>{item.body}</Text>
+              <Text style={style.listTitle}>{item.title}</Text>
+              <Text style={style.listBody}>{item.summary}</Text>
               <View style={style.footer}>
                 <Text style={style.itemPublisher}>{item.publisher}</Text>
-                <Text style={style.itemIssueDate}>{item.issueDate}</Text>
+                <Text style={style.itemTimestamp}>{item.timestamp}</Text>
               </View>
           </View>
           
@@ -82,12 +84,14 @@ export default class News extends Component {
         <TouchableOpacity style={style.modelStyle} onPress={() => this.setState({isModalVisible: false})}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={style.modelWrapperStyle}>
-              <Text style={style.itemHeader}>{this.state.selectedItem.header}</Text>
-              <Text style={style.itemBody}>{this.state.selectedItem.body}</Text>
-              <View style={style.footer}>
-                <Text style={style.itemPublisher}>{this.state.selectedItem.publisher}</Text>
-                <Text style={style.itemIssueDate}>{this.state.selectedItem.issueDate}</Text>
-              </View>
+              <Text style={style.itemTitle}>{this.state.selectedItem.title}</Text>
+              <ScrollView>
+                <Text style={style.itemBody}>{this.state.selectedItem.body}</Text>
+                <View style={style.footer}>
+                  <Text style={style.itemPublisher}>{this.state.selectedItem.publisher}</Text>
+                  <Text style={style.itemTimestamp}>{this.state.selectedItem.timestamp}</Text>
+                </View>
+              </ScrollView>
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
@@ -109,7 +113,8 @@ const style= StyleSheet.create({
     borderWidth:1,
     borderRadius:4,
     padding:8,
-    marginBottom:12
+    marginBottom:12,
+    height:160
   },
   listImg:{
     width:120,
@@ -117,18 +122,20 @@ const style= StyleSheet.create({
     resizeMode:'cover',
     marginRight:8
   },
-  listHeader:{
+  listTitle:{
     fontSize:18,
-    fontWeight:'bold'
+    fontWeight:'bold',
+    height:40
   },
-  itemBody:{
-      fontSize:16
+  listBody:{
+    fontSize:16,
+    height:80
   },
   itemPublisher:{
     fontSize:14,
     marginRight: 8
   },
-  itemIssueDate:{
+  itemTimestamp:{
     fontSize:14
   },
   modelStyle: {
@@ -142,10 +149,14 @@ const style= StyleSheet.create({
     padding: 20,
     width: '80%'
   },
-  itemHeader:{
+  itemTitle:{
     fontSize:18,
     fontWeight:'bold',
-    textAlign:'center'
+    textAlign:'center',
+    height: 40
+  },
+  itemBody:{
+    fontSize:16
   },
   footer: {
     flexDirection:'row',
