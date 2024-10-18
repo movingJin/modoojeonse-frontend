@@ -1,5 +1,5 @@
 import React, {Component, useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, ScrollView, Platform} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import axios from "axios";
 
@@ -101,7 +101,11 @@ export default class News extends Component {
 }
 
 const style= StyleSheet.create({
-  root:{flexGrow:1, padding:16,},
+  root:{
+    flexGrow:1,
+    padding:16,
+    height: (Platform.OS === 'web')? 800: undefined,
+  },
   titleText:{
     fontSize:24,
     fontWeight:'bold',
