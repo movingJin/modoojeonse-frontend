@@ -58,6 +58,11 @@ const imageLoaderConfiguration = {
   },
 };
 
+const leafletLoaderConfiguration = {
+  test: /\.css$/,
+  use: ['style-loader', 'css-loader']
+};
+
 module.exports = {
   entry: {
     app: path.join(__dirname, 'index.web.js'),
@@ -78,7 +83,8 @@ module.exports = {
       babelLoaderConfiguration,
       imageLoaderConfiguration,
       svgLoaderConfiguration,
-      ttfLoaderConfiguration
+      ttfLoaderConfiguration,
+      leafletLoaderConfiguration,
     ],
   },
   plugins: [

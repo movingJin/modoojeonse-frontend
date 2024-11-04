@@ -36,7 +36,7 @@ export default class News extends Component {
         const d = [...this.state.datas, ...response.data];
         this.setState({datas: d});
       })
-      .catch(error => console.log("testbug1: " + error));
+      .catch(error => console.log(error));
     }
   }
 
