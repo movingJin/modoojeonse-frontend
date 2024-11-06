@@ -1,7 +1,7 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Map from './Map.web'
+import Map from './maps/Map.web'
 import News from './News'
 
 const Tab = createMaterialTopTabNavigator();

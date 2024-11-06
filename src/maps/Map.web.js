@@ -1,7 +1,10 @@
 import React, { useRef, useEffect } from 'react';
+import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { FlashList } from "@shopify/flash-list";
+import ReviewDetail from './ReviewDetail';
 
 // Define custom marker icon (required for Leaflet markers to render correctly)
 delete L.Icon.Default.prototype._getIconUrl;

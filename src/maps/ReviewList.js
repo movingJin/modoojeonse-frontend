@@ -15,7 +15,7 @@ import MapView, { Marker, PROVIDER_GOOGLE, Polygon} from "react-native-maps";
 import { FlashList } from "@shopify/flash-list";
 import ReviewDetail from './ReviewDetail';
 
-class Map extends Component{
+class ReviewList extends Component{
   constructor(props){
     super(props);
     this.state={
@@ -32,97 +32,52 @@ class Map extends Component{
         {id: 10, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
         {id: 11, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'}
       ],
-      points: [
-        //{key: 1, address: "서울시 영등포구 신길로 15나길 11 (글로리홈)", latitude: 37.4973234106675, longitude: 126.905182497904, lastEditTime: "2024-03-19"},
-        //{key: 2, address: "서울시 영등포구 신길로 15나길 12 (temp)", latitude: 37.4974318381051, longitude: 126.905340228462, lastEditTime: "2000-01-01"},
-        {key: 3, address: "서울시 종로구 종로33길 15 (연강빌딩)", latitude: 37.571812327, longitude: 127.001000105, lastEditTime: "2000-01-01"}
-      ],
       selectedReview: null,
-      isReviewListVisible: false,
+      isReviewListVisible: true,
       isDetailVisible: false
     };
   }
 
-  async componentDidMount(){
-    // const [latitude, setLatitude] = useState(null);
-    // const [longitude, setLogitude] = useState(null);
-    const granted = await PermissionsAndroid.check( PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION );
-    if (granted) {
+  toggleReviewList = (_isReviewListVisible) => {
+    this.setState({isReviewListVisible: _isReviewListVisible});
+    this.props.toggleReviewList(_isReviewListVisible);
+  };
 
-    } 
-    else {
-      console.log( "ACCESS_FINE_LOCATION permission denied" );
-    }
-  }
-
-  pressMarkerCallout = (key) =>{
-    console.log(key);
-    this.toggleModal();
-  }
-
-  toggleModal = () => {
-    this.setState({
-      isReviewListVisible: !this.state.isReviewListVisible
-    });
+  toggleDetail = (_isDetailVisible) => {
+    this.setState({isDetailVisible: _isDetailVisible});
   };
 
   selectReview = (review) => {
     this.setState({selectedReview: review});
-    this.setState({isDetailVisible: true});
+    this.toggleDetail(true);
   };
 
   render() {
     return (
-      <View style={style.root}>
-        <MapView
-          style={{ flex: 1 }}
-          provider={PROVIDER_GOOGLE}
-          initialRegion={{
-          latitude: 37.57002,
-          longitude: 126.97962,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-          }}
+      <View>
+        <Modal
+        visible={this.state.isReviewListVisible}
+        transparent={true}
+        animationType='slide'
+        onRequestClose={() => this.toggleReviewList(!this.state.isReviewListVisible)}
         >
-          {this.state.points.map(point => (
-            <Marker
-              key={point.key}
-              coordinate={{latitude: point.latitude, longitude: point.longitude}}
-              title={point.address}
-              description={point.lastEditTime}
-              onCalloutPress={() => this.pressMarkerCallout(point.address)}
-            />
-          ))}
-        </MapView>
-        {this.state.isReviewListVisible && this.popupReviewList()}
+          <TouchableOpacity style={style.modelStyle} onPress={() => this.toggleReviewList(false)}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View style={style.modelWrapperStyle}>
+                <Text style={style.itemHeader}>헤더</Text>
+                <Text style={style.itemBody}>바디</Text>
+                <FlashList
+                  data={this.state.datas}
+                  renderItem={this.renderItem}
+                  estimatedItemSize={200}
+                  />
+              </View>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
+        </Modal>
         {this.state.isDetailVisible && this.popupDetail()}
       </View>
     );
-  }
-
-  popupReviewList=()=>{
-    return(
-      <Modal
-      visible={this.state.isReviewListVisible}
-      transparent={true}
-      animationType='slide'
-      onRequestClose={() => this.toggleModal()}
-      >
-        <TouchableOpacity style={style.modelStyle} onPress={() => this.setState({isReviewListVisible: false})}>
-          <TouchableWithoutFeedback onPress={() => {}}>
-            <View style={style.modelWrapperStyle}>
-              <Text style={style.itemHeader}>헤더</Text>
-              <Text style={style.itemBody}>바디</Text>
-              <FlashList
-                data={this.state.datas}
-                renderItem={this.renderItem}
-                estimatedItemSize={200}
-                />
-            </View>
-          </TouchableWithoutFeedback>
-        </TouchableOpacity>
-      </Modal>
-    )
   }
 
   renderItem=({item})=>{
@@ -147,7 +102,7 @@ class Map extends Component{
       <Modal
       visible={this.state.isDetailVisible}
       animationType='slide'
-      onRequestClose={() => this.setState({isDetailVisible: !this.state.isDetailVisible})}>
+      onRequestClose={() => this.toggleDetail(!this.state.isDetailVisible)}>
         <ReviewDetail review={this.state.selectedReview}>
   
         </ReviewDetail>
@@ -215,4 +170,4 @@ const style= StyleSheet.create({
   }
 });
 
-export default Map;
+export default ReviewList;
