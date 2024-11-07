@@ -1,5 +1,5 @@
 import React, {Component, useState, useEffect} from 'react';
-import {Pressable, View, Text, StyleSheet, TouchableOpacity, Modal, Image} from 'react-native';
+import {Pressable, View, Text, StyleSheet, ScrollView, Modal, Image} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 
 export default class ReviewDetail extends Component {
@@ -28,7 +28,9 @@ export default class ReviewDetail extends Component {
         <Text>계약일: {this.props.review.contractDate}</Text>
         <Text style={style.rating}>평점: {this.props.review.rating}</Text>
         <Text style={style.lastEditTime}>마지막 수정일: {this.props.review.lastEditTime}</Text>
-        <Text style={style.body}>{this.props.review.body}</Text>
+        <ScrollView>
+          <Text style={style.body}>{this.props.review.body}</Text>
+        </ScrollView>
       </View>
     );
   }

@@ -17,7 +17,7 @@ export default class News extends Component {
   }
 
   componentDidMount(){
-    axios.post(`${URL}/news/search-native`, {}).then((response)=>{
+    axios.get(`${URL}/news/search-native`, {}).then((response)=>{
       this.setState({datas: response.data});
     });
   }
@@ -32,7 +32,7 @@ export default class News extends Component {
   appendData = () => {
     if(this.state.datas.length > 0){
       const param = {"searchAfter": this.state.datas[this.state.datas.length-1].sort};
-      axios.post(`${URL}/news/search-native`, param).then((response)=>{
+      axios.get(`${URL}/news/search-native`, {params: param}).then((response)=>{
         const d = [...this.state.datas, ...response.data];
         this.setState({datas: d});
       })

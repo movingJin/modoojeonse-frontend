@@ -8,32 +8,26 @@
 
 import React, {Component, useState, useEffect} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
-import {Node} from 'react';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, Polygon} from "react-native-maps";
-import { FlashList } from "@shopify/flash-list";
 import ReviewList from './ReviewList';
-import ReviewDetail from './ReviewDetail';
+import axios from "axios";
+
+const URL = 'http://192.168.0.3:58083'
 
 class Map extends Component{
   constructor(props){
     super(props);
     this.state={
       points: [
-        //{key: 1, address: "서울시 영등포구 신길로 15나길 11 (글로리홈)", latitude: 37.4973234106675, longitude: 126.905182497904, lastEditTime: "2024-03-19"},
-        //{key: 2, address: "서울시 영등포구 신길로 15나길 12 (temp)", latitude: 37.4974318381051, longitude: 126.905340228462, lastEditTime: "2000-01-01"},
-        {key: 3, address: "서울시 종로구 종로33길 15 (연강빌딩)", latitude: 37.571812327, longitude: 127.001000105, lastEditTime: "2000-01-01"}
+        {id: 1, address: "서울시 종로구 종로33길 15 (연강빌딩)", location: {lat: 37.571812327, lon: 127.001000105}, timestamp: "2000-01-01"}
       ],
-      selectedReview: null,
-      isReviewListVisible: false,
-      isDetailVisible: false
+      isReviewListVisible: false
     };
   }
 
   async componentDidMount(){
-    // const [latitude, setLatitude] = useState(null);
-    // const [longitude, setLogitude] = useState(null);
     const granted = await PermissionsAndroid.check( PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION );
     if (granted) {
 
@@ -41,16 +35,17 @@ class Map extends Component{
     else {
       console.log( "ACCESS_FINE_LOCATION permission denied" );
     }
+
+    const pivot = {"location.lat": 37.4974318381051, "location.lon": 126.905340228462}
+    axios.get(`${URL}/geo/distance`, {params: pivot}).then((response)=>{
+      this.setState({points: response.data});
+    });
   }
 
   toggleReviewList = (_isReviewListVisible) => {
     this.setState({
       isReviewListVisible: _isReviewListVisible
     });
-  };
-
-  toggleReviewDetail = (_isDetailVisible) => {
-    this.setState({isDetailVisible: _isDetailVisible});
   };
 
   render() {
@@ -68,10 +63,10 @@ class Map extends Component{
         >
           {this.state.points.map(point => (
             <Marker
-              key={point.key}
-              coordinate={{latitude: point.latitude, longitude: point.longitude}}
+              key={point.id}
+              coordinate={{latitude: point.location.lat, longitude: point.location.lon}}
               title={point.address}
-              description={point.lastEditTime}
+              description={point.timestamp}
               onCalloutPress={() => this.toggleReviewList(!this.state.isReviewListVisible)}
             />
           ))}
@@ -84,61 +79,6 @@ class Map extends Component{
 
 const style= StyleSheet.create({
   root:{flex:1},
-  titleText:{
-    fontSize:24,
-    fontWeight:'bold',
-    textAlign:'center',
-    paddingBottom:16
-  },
-  listView:{
-    flexDirection:'row',
-    borderWidth:1,
-    borderRadius:4,
-    padding:8,
-    marginBottom:12
-  },
-  listImg:{
-    width:120,
-    height:100,
-    resizeMode:'cover',
-    marginRight:8
-  },
-  listHeader:{
-    fontSize:18,
-    fontWeight:'bold'
-  },
-  itemBody:{
-      fontSize:16
-  },
-  itemPublisher:{
-    fontSize:14,
-    marginRight: 8
-  },
-  itemIssueDate:{
-    fontSize:14
-  },
-  modelStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
-  modelWrapperStyle: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    width: '80%',
-    height: '90%'
-  },
-  itemHeader:{
-    fontSize:18,
-    fontWeight:'bold',
-    textAlign:'center'
-  },
-  footer: {
-    flexDirection:'row',
-    textAlign: 'left',
-    marginTop: 8
-  }
 });
 
 export default Map;

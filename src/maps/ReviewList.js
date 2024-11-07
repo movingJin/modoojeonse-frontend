@@ -6,12 +6,8 @@
  * @flow strict-local
  */
 
-import React, {Component, useState, useEffect} from 'react';
+import React, {Component} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
-import {Node} from 'react';
-import Geolocation from 'react-native-geolocation-service';
-import { PermissionsAndroid } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, Polygon} from "react-native-maps";
 import { FlashList } from "@shopify/flash-list";
 import ReviewDetail from './ReviewDetail';
 
@@ -43,13 +39,13 @@ class ReviewList extends Component{
     this.props.toggleReviewList(_isReviewListVisible);
   };
 
-  toggleDetail = (_isDetailVisible) => {
+  toggleReviewDetail = (_isDetailVisible) => {
     this.setState({isDetailVisible: _isDetailVisible});
   };
 
   selectReview = (review) => {
     this.setState({selectedReview: review});
-    this.toggleDetail(true);
+    this.toggleReviewDetail(true);
   };
 
   render() {
@@ -61,9 +57,9 @@ class ReviewList extends Component{
         animationType='slide'
         onRequestClose={() => this.toggleReviewList(!this.state.isReviewListVisible)}
         >
-          <TouchableOpacity style={style.modelStyle} onPress={() => this.toggleReviewList(false)}>
+          <TouchableOpacity style={style.ListModalStyle} onPress={() => this.toggleReviewList(false)}>
             <TouchableWithoutFeedback onPress={() => {}}>
-              <View style={style.modelWrapperStyle}>
+              <View style={style.modalWrapperStyle}>
                 <Text style={style.itemHeader}>헤더</Text>
                 <Text style={style.itemBody}>바디</Text>
                 <FlashList
@@ -101,18 +97,22 @@ class ReviewList extends Component{
     return(
       <Modal
       visible={this.state.isDetailVisible}
+      transparent={true}
       animationType='slide'
-      onRequestClose={() => this.toggleDetail(!this.state.isDetailVisible)}>
-        <ReviewDetail review={this.state.selectedReview}>
-  
-        </ReviewDetail>
+      onRequestClose={() => this.toggleReviewDetail(!this.state.isDetailVisible)}>
+        <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}} onPress={() => this.toggleReviewDetail(false)}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={style.modalWrapperStyle}>
+              <ReviewDetail review={this.state.selectedReview} />
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       </Modal>
     )
   };
 }
 
 const style= StyleSheet.create({
-  root:{flex:1},
   titleText:{
     fontSize:24,
     fontWeight:'bold',
@@ -146,13 +146,19 @@ const style= StyleSheet.create({
   itemIssueDate:{
     fontSize:14
   },
-  modelStyle: {
+  ListModalStyle: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
-  modelWrapperStyle: {
+  detailModalStyle: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalWrapperStyle: {
     backgroundColor: '#ffffff',
     padding: 20,
     width: '80%',
