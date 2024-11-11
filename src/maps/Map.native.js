@@ -10,8 +10,11 @@ import React, {Component, useState, useEffect} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, Polygon} from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import { FAB } from 'react-native-paper';
 import ReviewList from './ReviewList';
+import RegisterPin from './RegisterPin'
+import globalStyle from "../styles/globalStyle"
 import axios from "axios";
 
 const URL = 'http://192.168.0.3:58083'
@@ -50,7 +53,7 @@ class Map extends Component{
 
   render() {
     return (
-      <View style={style.root}>
+      <View style={{ flex:1 }}>
         <MapView
           style={{ flex: 1 }}
           provider={PROVIDER_GOOGLE}
@@ -72,13 +75,14 @@ class Map extends Component{
           ))}
         </MapView>
         {this.state.isReviewListVisible && <ReviewList toggleReviewList={this.toggleReviewList} />}
+        <FAB
+          icon="plus"
+          style={globalStyle.fab}
+          onPress={() => <RegisterPin />}
+        />
       </View>
     );
   }
 }
-
-const style= StyleSheet.create({
-  root:{flex:1},
-});
 
 export default Map;

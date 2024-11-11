@@ -10,6 +10,7 @@ import React, {Component} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import ReviewDetail from './ReviewDetail';
+import globalStyle from "../styles/globalStyle"
 
 class ReviewList extends Component{
   constructor(props){
@@ -57,11 +58,11 @@ class ReviewList extends Component{
         animationType='slide'
         onRequestClose={() => this.toggleReviewList(!this.state.isReviewListVisible)}
         >
-          <TouchableOpacity style={style.ListModalStyle} onPress={() => this.toggleReviewList(false)}>
+          <TouchableOpacity style={globalStyle.modalStyle} onPress={() => this.toggleReviewList(false)}>
             <TouchableWithoutFeedback onPress={() => {}}>
-              <View style={style.modalWrapperStyle}>
-                <Text style={style.itemHeader}>헤더</Text>
-                <Text style={style.itemBody}>바디</Text>
+              <View style={globalStyle.modalWrapperStyle}>
+                <Text style={globalStyle.itemHeader}>헤더</Text>
+                <Text style={globalStyle.itemBody}>바디</Text>
                 <FlashList
                   data={this.state.datas}
                   renderItem={this.renderItem}
@@ -78,14 +79,14 @@ class ReviewList extends Component{
 
   renderItem=({item})=>{
     return(
-      <TouchableOpacity style={style.listView} onPress={() => this.selectReview(item)}>
-          {/* <Image source={item.img} style={style.listImg}></Image> */}
+      <TouchableOpacity style={globalStyle.listView} onPress={() => this.selectReview(item)}>
+          {/* <Image source={item.img} style={globalStyle.listImg}></Image> */}
           <View style={{flexDirection:'column'}}>
-              <Text style={style.listHeader}>{item.title}</Text>
-              <Text style={style.itemBody}>{item.body}</Text>
-              <View style={style.footer}>
-                <Text style={style.itemPublisher}>{item.rating}</Text>
-                <Text style={style.itemIssueDate}>{item.lastEditTime}</Text>
+              <Text style={globalStyle.listHeader}>{item.title}</Text>
+              <Text style={globalStyle.itemBody}>{item.body}</Text>
+              <View style={globalStyle.footer}>
+                <Text style={globalStyle.itemPublisher}>{item.rating}</Text>
+                <Text style={globalStyle.itemIssueDate}>{item.lastEditTime}</Text>
               </View>
           </View>
           
@@ -102,7 +103,7 @@ class ReviewList extends Component{
       onRequestClose={() => this.toggleReviewDetail(!this.state.isDetailVisible)}>
         <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}} onPress={() => this.toggleReviewDetail(false)}>
           <TouchableWithoutFeedback onPress={() => {}}>
-            <View style={style.modalWrapperStyle}>
+            <View style={globalStyle.modalWrapperStyle}>
               <ReviewDetail review={this.state.selectedReview} />
             </View>
           </TouchableWithoutFeedback>
@@ -111,69 +112,5 @@ class ReviewList extends Component{
     )
   };
 }
-
-const style= StyleSheet.create({
-  titleText:{
-    fontSize:24,
-    fontWeight:'bold',
-    textAlign:'center',
-    paddingBottom:16
-  },
-  listView:{
-    flexDirection:'row',
-    borderWidth:1,
-    borderRadius:4,
-    padding:8,
-    marginBottom:12
-  },
-  listImg:{
-    width:120,
-    height:100,
-    resizeMode:'cover',
-    marginRight:8
-  },
-  listHeader:{
-    fontSize:18,
-    fontWeight:'bold'
-  },
-  itemBody:{
-      fontSize:16
-  },
-  itemPublisher:{
-    fontSize:14,
-    marginRight: 8
-  },
-  itemIssueDate:{
-    fontSize:14
-  },
-  ListModalStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
-  detailModalStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
-  modalWrapperStyle: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    width: '80%',
-    height: '90%'
-  },
-  itemHeader:{
-    fontSize:18,
-    fontWeight:'bold',
-    textAlign:'center'
-  },
-  footer: {
-    flexDirection:'row',
-    textAlign: 'left',
-    marginTop: 8
-  }
-});
 
 export default ReviewList;

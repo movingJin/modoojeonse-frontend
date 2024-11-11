@@ -1,10 +1,13 @@
 // Map.web.js
 import React, { useEffect, useState } from 'react';
+import {View, StyleSheet} from 'react-native';
 import ReviewList from './ReviewList';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { FAB } from 'react-native-paper';
 import axios from "axios";
+import globalStyle from "../styles/globalStyle"
 
 const URL = 'http://192.168.0.3:58083'
 
@@ -54,24 +57,31 @@ const Map = () => {
   };
 
   return (
-    <MapContainer center={[37.57002, 126.97962]} zoom={13} style={{ height: '80vh', width: '100%' }}>
-      <MapRefresher />
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <View style={{ flex: 1 }}>
+      <MapContainer center={[37.57002, 126.97962]} zoom={13} style={{ height: '80vh', width: '100%' }}>
+        <MapRefresher />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {points.map(point => (
-        <Marker key={point.id} position={[point.location.lat, point.location.lon]}>
-          <Popup>
-            <div>
-              <p>{point.address}<br /> {point.timestamp}</p>
-              <button onClick={toggleReviewList} style={{ padding: '5px', cursor: 'pointer' }}>
-                리뷰 보기
-              </button>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+        {points.map(point => (
+          <Marker key={point.id} position={[point.location.lat, point.location.lon]}>
+            <Popup>
+              <div>
+                <p>{point.address}<br /> {point.timestamp}</p>
+                <button onClick={toggleReviewList} style={{ padding: '5px', cursor: 'pointer' }}>
+                  리뷰 보기
+                </button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
       {isReviewListVisible && <ReviewList toggleReviewList={toggleReviewList} />}
-    </MapContainer>
+      <FAB
+          icon="plus"
+          style={globalStyle.fab}
+          onPress={() => console.log('FAB Pressed')}
+        />
+    </View>
   );
 };
 
