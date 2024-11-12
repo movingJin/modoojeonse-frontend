@@ -51,6 +51,25 @@ class Map extends Component{
     });
   };
 
+  popupList=()=>{
+    return(
+      <Modal
+      visible={this.state.isReviewListVisible}
+      transparent={true}
+      animationType='slide'
+      onRequestClose={() => this.toggleReviewList(!this.state.isReviewListVisible)}
+      >
+        <TouchableOpacity style={globalStyle.modalStyle} onPress={() => this.toggleReviewList(false)}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={globalStyle.modalWrapperStyle}>
+              <ReviewList toggleReviewList={this.toggleReviewList} />
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+    )
+  };
+
   render() {
     return (
       <View style={{ flex:1 }}>
@@ -74,7 +93,7 @@ class Map extends Component{
             />
           ))}
         </MapView>
-        {this.state.isReviewListVisible && <ReviewList toggleReviewList={this.toggleReviewList} />}
+        {this.state.isReviewListVisible && this.popupList()}
         <FAB
           icon="plus"
           style={globalStyle.fab}

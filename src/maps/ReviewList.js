@@ -51,27 +51,14 @@ class ReviewList extends Component{
 
   render() {
     return (
-      <View>
-        <Modal
-        visible={this.state.isReviewListVisible}
-        transparent={true}
-        animationType='slide'
-        onRequestClose={() => this.toggleReviewList(!this.state.isReviewListVisible)}
-        >
-          <TouchableOpacity style={globalStyle.modalStyle} onPress={() => this.toggleReviewList(false)}>
-            <TouchableWithoutFeedback onPress={() => {}}>
-              <View style={globalStyle.modalWrapperStyle}>
-                <Text style={globalStyle.itemHeader}>헤더</Text>
-                <Text style={globalStyle.itemBody}>바디</Text>
-                <FlashList
-                  data={this.state.datas}
-                  renderItem={this.renderItem}
-                  estimatedItemSize={200}
-                  />
-              </View>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
-        </Modal>
+      <View style={globalStyle.flashListWrapper}>
+        <Text style={globalStyle.itemHeader}>헤더</Text>
+        <Text style={globalStyle.itemBody}>바디</Text>
+        <FlashList
+          data={this.state.datas}
+          renderItem={this.renderItem}
+          estimatedItemSize={200}
+          />
         {this.state.isDetailVisible && this.popupDetail()}
       </View>
     );

@@ -56,6 +56,9 @@ export default StyleSheet.create({
       height: '90%',
       backgroundColor: colors.modalBackground
     },
+    flashListWrapper: {
+        height: '90%',
+      },
     itemHeader:{
       fontSize:18,
       fontWeight:'bold',
@@ -70,6 +73,7 @@ export default StyleSheet.create({
         position: 'absolute',
         bottom: 16,
         right: 16,
-        backgroundColor: colors.fab
+        backgroundColor: colors.fab,
+        zIndex: 1000, // Ensures it appears above the map
       },
   });

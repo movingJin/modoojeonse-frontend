@@ -1,6 +1,6 @@
 // Map.web.js
 import React, { useEffect, useState } from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, TouchableOpacity, TouchableWithoutFeedback, Modal} from 'react-native';
 import ReviewList from './ReviewList';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -52,8 +52,23 @@ const Map = () => {
     setReviewListVisible(_isReviewListVisible);
   };
 
-  const handlePopupClick = () => {
-    alert('Popup clicked!');
+  popupList=()=>{
+    return(
+      <Modal
+      visible={isReviewListVisible}
+      transparent={true}
+      animationType='slide'
+      onRequestClose={() => toggleReviewList(!isReviewListVisible)}
+      >
+        <TouchableOpacity style={globalStyle.modalStyle} onPress={() => toggleReviewList(false)}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={globalStyle.modalWrapperStyle}>
+              <ReviewList toggleReviewList={toggleReviewList} />
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+    )
   };
 
   return (
@@ -75,7 +90,7 @@ const Map = () => {
           </Marker>
         ))}
       </MapContainer>
-      {isReviewListVisible && <ReviewList toggleReviewList={toggleReviewList} />}
+      {isReviewListVisible && popupList()}
       <FAB
           icon="plus"
           style={globalStyle.fab}
