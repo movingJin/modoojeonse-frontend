@@ -57,8 +57,8 @@ export default StyleSheet.create({
       backgroundColor: colors.modalBackground
     },
     flashListWrapper: {
-        height: '90%',
-      },
+        height: '100%',
+    },
     itemHeader:{
       fontSize:18,
       fontWeight:'bold',
