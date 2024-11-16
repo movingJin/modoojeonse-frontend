@@ -1,32 +1,48 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { sendAuthCode, signUp } from '../utils/tokenUtils';
+import { Platform, View, TouchableOpacity, TouchableWithoutFeedback, Modal, StyleSheet, Text } from 'react-native';
+import { TextInput, Button, RadioButton } from 'react-native-paper';
+import Postcode from '@actbase/react-daum-postcode';
+import authStore from '../utils/authStore';
+import { saveGeoPoint } from '../utils/tokenUtils';
+import axios from "axios";
+//import customAlert from '../customAlert';
+import Config from "react-native-config";
+import globalStyle from "../styles/globalStyle"
 
-const SignupPage = ({ navigation }) => {
-  const [address, setAddress] = useState('');
-  const [adressDetail, setAddressDetail] = useState('');
-  const [type, setType] = useState('');
+const URL = 'http://192.168.0.3:58083'
+
+const RegisterPin = ({ toggleRegister }) => {
+  const [address, setAddress] = useState('신길로 15나길 11');
+  const [addressDetail, setAddressDetail] = useState('');
+  const [type, setType] = useState('Apartment');
   const [errors, setErrors] = useState({}); 
-  const [isFormValid, setIsFormValid] = useState(false); 
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isPostVisible, setIsPostVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFinished, setIsFinished] = useState(true); 
 
   const addressInputRef = useRef();
   const addressDetailInputRef = useRef();
   const typeInputRef = useRef();
 
   useEffect(() => {
-    addressInputRef.current.focus();
+    addressInputRef.current?.focus();
   }, [])
 
   useEffect(() => { 
     validateForm();
-  }, [address, adressDetail, type]);
+  }, [address, addressDetail, type]);
+
+  useEffect(() => {
+    if(!isLoading & isFinished){
+      toggleRegister(false);
+    }
+  }, [isFinished])
 
   function validateForm() { 
     const errors = {};
     if (!type) { 
-      errors.message = '핸드폰번호는 필수 입력입니다.'; 
+      errors.message = '주거유형은 필수 입력입니다.';
     }
     if (!address) {
         errors.message = '주소는 필수 입력입니다.'; 
@@ -35,41 +51,111 @@ const SignupPage = ({ navigation }) => {
     // Set the errors and update form validity 
     setErrors(errors);
     setIsFormValid(Object.keys(errors).length === 0); 
+  }
+
+  const popupPostcode=()=>{
+    return(
+      <Modal
+      visible={isPostVisible}
+      transparent={true}
+      animationType='slide'
+      onRequestClose={() => setIsPostVisible(!isPostVisible)}>
+        <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}} onPress={() => setIsPostVisible(false)}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={globalStyle.modalWrapperStyle}>
+              <Postcode
+                visible={isPostVisible}
+                style={{ width: '100%', height: '100%' }}
+                jsOptions={{ animation: true, hideMapBtn: true }}
+                onSelected={(data) => getAddressData(data)}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+    )
   };
+
+  const getAddressData = (data) => {
+    let defaultAddress='';
+    
+    if(data.buildingName===''){
+        defaultAddress='';
+    }else if(data.buildingName==='N'){
+        defaultAddress="("+data.apartment+")";
+    }else{
+        defaultAddress="("+data.buildingName+")";
+    }
+
+    setIsPostVisible(false);
+    setAddress(data.address + ' ' + defaultAddress);
+  }
+
+  const saveMarker = async () => {
+    const apiKey = Platform.OS === "web" ? process.env.REACT_APP_GOOGLE_MAP_API: Config.REACT_APP_GOOGLE_MAP_API;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+    
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.status === "OK") {
+        const ret = data.results[0].geometry.location;
+        const location = {lat: ret.lat, lon: ret.lng};
+        const body = {
+          location,
+          address,
+          author: authStore.getState().email,
+          type
+        };
+        setIsFinished(false);
+        saveGeoPoint(body, setIsFinished);
+      } else {
+        console.log("Geocoding failed: " + data.status);
+      }
+    } catch (error) {
+      console.log("Error fetching geocode data: " + error.message);
+    } finally{
+      setIsLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.formArea}>
         <View style={styles.formAddress}>
           <TextInput
-            style={textAddress}
-            placeholder={'주소'}
-            ref={addressInputRef}
-            returnKeyType="next"
-            onSubmitEditing={() =>
-              adressDetail.current && adressDetail.current.focus()
-            }
-            mode="outlined"
             label="주소"
-            value={userId}
+            value={address}
             onChangeText={setAddress}
+            ref={addressInputRef}
+            disabled={true}
+            style={[{width: '80%'}, globalStyle.textInput]}
           />
-          <Button style={styles.sendAuthCode} title="인증코드 전송" onPress={() => sendAuthCode(address)} />
+          <Button style={globalStyle.fab} mode="contained" onPress={() => setIsPostVisible(true)}>우편번호 조회</Button>
         </View>
         <TextInput
-          style={textAddress}
-          placeholder={'상세주소'}
-          ref={addressDetailInputRef}
-          returnKeyType="next"
-          onSubmitEditing={() =>
-            typeInputRef.current && typeInputRef.current.focus()
-          }
-          mode="outlined"
           label="상세주소"
-          value={userId}
+          value={addressDetail}
           onChangeText={setAddressDetail}
+          ref={addressDetailInputRef}
+          style={globalStyle.textInput}
         />
+        <Text style={globalStyle.label} >주거유형</Text>
+        <RadioButton.Group
+          onValueChange={value => setType(value)} // Update state on selection
+          value={type} // Current selected value
+        >
+          <View style={globalStyle.horizontalRadioGroup}>
+            <RadioButton.Item label="아파트" value="Apartment" position="leading" style={globalStyle.radioLabel} />
+            <RadioButton.Item label="오피스텔" value="Officetel" position="leading" style={globalStyle.radioLabel} />
+            <RadioButton.Item label="다세대" value="multiplex" position="leading" style={globalStyle.radioLabel} />
+            <RadioButton.Item label="다가구" value="multiFamily" position="leading" style={globalStyle.radioLabel} />
+            <RadioButton.Item label="단독주택" value="singleFamily" position="leading" style={globalStyle.radioLabel} />
+          </View>
+        </RadioButton.Group>
       </View>
-
+      {isPostVisible && popupPostcode()}
       <View style={{flex: 0.5, justifyContent: 'center'}}>
       {!isFormValid ? (
         <Text style={styles.TextValidation}>
@@ -77,13 +163,13 @@ const SignupPage = ({ navigation }) => {
         </Text>
       ) : null}
       </View>
-      {/* <Button
-        style={{color: 'white', fontSize: wp('4%')}}
-        title="회원가입"
-        disabled={!isFormValid}
-        onPress={() => signUp(address, adressDetail, type, authCode, password, navigation)}
-      >
-      </Button> */}
+      <Button
+        mode="contained"
+        disabled={!isFormValid | !isFinished}
+        onPress={() => saveMarker()}
+        style={styles.bottomButton}>
+          주소지 등록
+      </Button>
     </View>
   );
 };
@@ -95,20 +181,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  textAddress: {
-    width: '200px',
-    marginBottom: '25px',
-  },
   formArea: {
+    width: '100%',
     flex: 1
   },
   formAddress: {
     flexDirection: 'row',
-    width: wp('100%')
-  },
-  sendAuthCode: {
-    width: wp('10%'),
-    paddingLeft: wp('2%')
   },
   TextValidation: {
     fontSize:24,
@@ -116,14 +194,12 @@ const styles = StyleSheet.create({
     textAlign:'center',
     paddingBottom:16
   },
-  wrapButton: {
-    width: wp('100%'),
-    height: hp('8%'),
-    paddingLeft: wp('2%'),
-    justifyContent: 'center',
-    borderBottomWidth: 0.5,
-    borderColor: '#ccc',
-  }
+  bottomButton: {
+    position: 'absolute',
+    bottom: 20, // Add padding from the bottom
+    alignSelf: 'center', // Center horizontally
+    width: '90%', // Optional: full-width button with padding on each side
+  },
 })
 
-export default SignupPage;
+export default RegisterPin;

@@ -26,7 +26,8 @@ class Map extends Component{
       points: [
         {id: 1, address: "서울시 종로구 종로33길 15 (연강빌딩)", location: {lat: 37.571812327, lon: 127.001000105}, timestamp: "2000-01-01"}
       ],
-      isReviewListVisible: false
+      isReviewListVisible: false,
+      isRegisterVisible: false
     };
   }
 
@@ -51,6 +52,12 @@ class Map extends Component{
     });
   };
 
+  toggleRegister = (_isRegisterVisible) => {
+    this.setState({
+      isRegisterVisible: _isRegisterVisible
+    });
+  };
+
   popupList=()=>{
     return(
       <Modal
@@ -63,6 +70,25 @@ class Map extends Component{
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={globalStyle.modalWrapperStyle}>
               <ReviewList toggleReviewList={this.toggleReviewList} />
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+    )
+  };
+
+  popupRegisterPin=()=>{
+    return(
+      <Modal
+      visible={this.state.isRegisterVisible}
+      transparent={true}
+      animationType='slide'
+      onRequestClose={() => this.toggleRegister(!this.state.isRegisterVisible)}
+      >
+        <TouchableOpacity style={globalStyle.modalStyle} onPress={() => this.toggleRegister(false)}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={globalStyle.modalWrapperStyle}>
+              <RegisterPin toggleRegister={this.toggleRegister} />
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
@@ -94,10 +120,11 @@ class Map extends Component{
           ))}
         </MapView>
         {this.state.isReviewListVisible && this.popupList()}
+        {this.state.isRegisterVisible && this.popupRegisterPin()}
         <FAB
           icon="plus"
           style={globalStyle.fab}
-          onPress={() => <RegisterPin />}
+          onPress={() => this.toggleRegister(true)}
         />
       </View>
     );

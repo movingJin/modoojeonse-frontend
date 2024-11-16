@@ -5,9 +5,11 @@ import ReviewList from './ReviewList';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import RegisterPin from './RegisterPin'
 import { FAB } from 'react-native-paper';
 import axios from "axios";
 import globalStyle from "../styles/globalStyle"
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const URL = 'http://192.168.0.3:58083'
 
@@ -40,6 +42,7 @@ const Map = () => {
     }
   ]);
   const [isReviewListVisible, setReviewListVisible] = useState(false);
+  const [isRegisterVisible, setRegisterVisible] = useState(false);
 
   useEffect(() => {
     const pivot = {"location.lat": 37.4974318381051, "location.lon": 126.905340228462};
@@ -50,6 +53,10 @@ const Map = () => {
 
   const toggleReviewList = (_isReviewListVisible) => {
     setReviewListVisible(_isReviewListVisible);
+  };
+
+  const toggleRegister = (_isRegisterVisible) => {
+    setRegisterVisible(_isRegisterVisible);
   };
 
   popupList=()=>{
@@ -64,6 +71,25 @@ const Map = () => {
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={globalStyle.modalWrapperStyle}>
               <ReviewList toggleReviewList={toggleReviewList} />
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+    )
+  };
+
+  popupRegisterPin=()=>{
+    return(
+      <Modal
+      visible={isRegisterVisible}
+      transparent={true}
+      animationType='slide'
+      onRequestClose={() => toggleRegister(!isRegisterVisible)}
+      >
+        <TouchableOpacity style={globalStyle.modalStyle} onPress={() => toggleRegister(false)}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={globalStyle.modalWrapperStyle}>
+              <RegisterPin toggleRegister={toggleRegister}/>
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
@@ -89,13 +115,14 @@ const Map = () => {
             </Popup>
           </Marker>
         ))}
+        <FAB
+          icon={(props) => <MaterialIcons name="add" size={24} color={props.color} />}
+          style={globalStyle.fab}
+          onPress={() => toggleRegister(true)}
+        />
       </MapContainer>
       {isReviewListVisible && popupList()}
-      <FAB
-          icon="plus"
-          style={globalStyle.fab}
-          onPress={() => console.log('FAB Pressed')}
-        />
+      {isRegisterVisible && popupRegisterPin()}
     </View>
   );
 };

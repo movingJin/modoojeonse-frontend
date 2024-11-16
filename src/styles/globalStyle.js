@@ -73,7 +73,34 @@ export default StyleSheet.create({
         position: 'absolute',
         bottom: 16,
         right: 16,
+        zIndex: 500,
         backgroundColor: colors.fab,
-        zIndex: 1000, // Ensures it appears above the map
+    },
+    textInput:{
+        marginVertical: 8,
+        marginHorizontal: 4
+    },
+    button:{
+        bottom: 16,
+        right: 16,
+        backgroundColor: colors.fab,
+    },
+    label:{
+        fontSize: 16,
+        color: '#000'
+    },
+    horizontalRadioGroup: {
+        flexDirection: 'row', // Arrange items in a row
+        alignItems: 'center',
+        justifyContent: 'space-around', // Optional: space them evenly
+    },
+    radioItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 8,
       },
+    radioLabel: {
+        fontSize: 12,
+        marginLeft: 8,
+    },
   });

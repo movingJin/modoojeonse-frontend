@@ -3,7 +3,7 @@ import { Button, Text, TextInput, View, TouchableOpacity, StyleSheet } from 'rea
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { modifyPwd } from '../utils/tokenUtils';
 
-const SignupPage = ({ navigation }) => {
+const ModifyPwdPage = ({ navigation }) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordChk, setNewPasswordChk] = useState('');
@@ -134,4 +134,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default SignupPage;
+export default ModifyPwdPage;

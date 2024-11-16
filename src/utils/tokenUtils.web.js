@@ -292,3 +292,17 @@ export const withdraw = async (password, navigation) => {
     }
   }
 };
+
+export const saveGeoPoint = async (body, setIsFinished) => {
+  axios.post(`${URL}/geo/save`, body).then((response)=>{
+    if (response.status === 200){
+      customAlert("주소지 등록 성공", "입력한 주소지가 등록되었습니다.");
+    }
+  })
+  .catch(error => {
+    customAlert("주소지 등록 실패", error);
+  })
+  .finally(() => {
+    setIsFinished(true);
+  });
+};

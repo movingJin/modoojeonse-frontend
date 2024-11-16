@@ -2,6 +2,7 @@ const path = require('path');
 
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const appDirectory = path.resolve(__dirname);
 const {presets} = require(`${appDirectory}/babel.config.js`);
@@ -95,6 +96,9 @@ module.exports = {
     new webpack.DefinePlugin({
       // See: https://github.com/necolas/react-native-web/issues/349
       __DEV__: JSON.stringify(true),
+    }),
+    new Dotenv({
+      path: './.env', // Path to your .env file
     }),
   ],
   devServer: {
