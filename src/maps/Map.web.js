@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import {View, TouchableOpacity, TouchableWithoutFeedback, Modal} from 'react-native';
 import ReviewList from './ReviewList';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import RegisterPin from './RegisterPin'
@@ -33,22 +33,18 @@ const MapRefresher = () => {
 };
 
 const Map = () => {
-  const [points, setPoints] = useState([
-    {
-      id: 1,
-      address: "서울시 종로구 종로33길 15 (연강빌딩)",
-      location: { lat: 37.571812327, lon: 127.001000105 },
-      timestamp: "2000-01-01"
-    }
-  ]);
+  const [points, setPoints] = useState([]);
+  const [center, setCenter] = useState({
+    latitude: 37.57002,
+    longitude: 126.97962,
+    latitudeDelta: 0.0922,  // Default zoom
+    longitudeDelta: 0.0421,
+  },);
   const [isReviewListVisible, setReviewListVisible] = useState(false);
   const [isRegisterVisible, setRegisterVisible] = useState(false);
 
   useEffect(() => {
-    const pivot = {"location.lat": 37.4974318381051, "location.lon": 126.905340228462};
-    axios.get(`${URL}/geo/distance`, { params: pivot }).then((response) => {
-      setPoints(response.data);
-    });
+    loadGeoPoints();
   }, []);
 
   const toggleReviewList = (_isReviewListVisible) => {
@@ -58,6 +54,16 @@ const Map = () => {
   const toggleRegister = (_isRegisterVisible) => {
     setRegisterVisible(_isRegisterVisible);
   };
+
+  loadGeoPoints = () => {
+    const pivot = {
+      "location.lat": center.latitude,
+      "location.lon": center.longitude
+    };
+    axios.get(`${URL}/geo/distance`, {params: pivot}).then((response)=>{
+      setPoints(response.data);
+    });
+  }
 
   popupList=()=>{
     return(
@@ -97,12 +103,31 @@ const Map = () => {
     )
   };
 
+  onRegionChangeComplete = (newRegion) => {
+    setCenter(newRegion);
+    loadGeoPoints();
+  };
+
+  RegionChangeHandler = () => {
+    const mapEvents = useMapEvents({
+      moveend: () => {
+        const newCenter = mapEvents.getCenter(); // Get the new center of the map
+        onRegionChangeComplete({
+          latitude: newCenter.lat,
+          longitude: newCenter.lng,
+        });
+      },
+    });
+  
+    return null;
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <MapContainer center={[37.57002, 126.97962]} zoom={13} style={{ height: '80vh', width: '100%' }}>
         <MapRefresher />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
+        <RegionChangeHandler />
         {points.map(point => (
           <Marker key={point.id} position={[point.location.lat, point.location.lon]}>
             <Popup>

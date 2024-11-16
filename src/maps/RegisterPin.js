@@ -12,7 +12,7 @@ import globalStyle from "../styles/globalStyle"
 const URL = 'http://192.168.0.3:58083'
 
 const RegisterPin = ({ toggleRegister }) => {
-  const [address, setAddress] = useState('신길로 15나길 11');
+  const [address, setAddress] = useState('');
   const [addressDetail, setAddressDetail] = useState('');
   const [type, setType] = useState('Apartment');
   const [errors, setErrors] = useState({}); 

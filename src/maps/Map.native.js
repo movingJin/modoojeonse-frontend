@@ -10,7 +10,7 @@ import React, {Component, useState, useEffect} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import MapView, { Region, Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import { FAB } from 'react-native-paper';
 import ReviewList from './ReviewList';
 import RegisterPin from './RegisterPin'
@@ -23,9 +23,13 @@ class Map extends Component{
   constructor(props){
     super(props);
     this.state={
-      points: [
-        {id: 1, address: "서울시 종로구 종로33길 15 (연강빌딩)", location: {lat: 37.571812327, lon: 127.001000105}, timestamp: "2000-01-01"}
-      ],
+      points: [],
+      center: {
+        latitude: 37.57002,
+        longitude: 126.97962,
+        latitudeDelta: 0.0922,  // Default zoom
+        longitudeDelta: 0.0421,
+      },
       isReviewListVisible: false,
       isRegisterVisible: false
     };
@@ -39,11 +43,7 @@ class Map extends Component{
     else {
       console.log( "ACCESS_FINE_LOCATION permission denied" );
     }
-
-    const pivot = {"location.lat": 37.4974318381051, "location.lon": 126.905340228462}
-    axios.get(`${URL}/geo/distance`, {params: pivot}).then((response)=>{
-      this.setState({points: response.data});
-    });
+    this.loadGeoPoints();
   }
 
   toggleReviewList = (_isReviewListVisible) => {
@@ -57,6 +57,16 @@ class Map extends Component{
       isRegisterVisible: _isRegisterVisible
     });
   };
+
+  loadGeoPoints = () => {
+    const pivot = {
+      "location.lat": this.state.center.latitude,
+      "location.lon": this.state.center.longitude
+    };
+    axios.get(`${URL}/geo/distance`, {params: pivot}).then((response)=>{
+      this.setState({points: response.data});
+    });
+  }
 
   popupList=()=>{
     return(
@@ -96,18 +106,19 @@ class Map extends Component{
     )
   };
 
+  onRegionChangeComplete = (newRegion) => {
+    this.setState({ center: newRegion });
+    this.loadGeoPoints();
+  };
+
   render() {
     return (
       <View style={{ flex:1 }}>
         <MapView
           style={{ flex: 1 }}
           provider={PROVIDER_GOOGLE}
-          initialRegion={{
-          latitude: 37.57002,
-          longitude: 126.97962,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-          }}
+          initialRegion={this.state.center}
+          onRegionChangeComplete={this.onRegionChangeComplete}
         >
           {this.state.points.map(point => (
             <Marker
