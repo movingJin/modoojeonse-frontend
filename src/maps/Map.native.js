@@ -14,6 +14,7 @@ import MapView, { Region, Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import { FAB } from 'react-native-paper';
 import ReviewList from './ReviewList';
 import RegisterPin from './RegisterPin'
+import authStore from '../utils/authStore';
 import globalStyle from "../styles/globalStyle"
 import axios from "axios";
 
@@ -30,12 +31,14 @@ class Map extends Component{
         latitudeDelta: 0.0922,  // Default zoom
         longitudeDelta: 0.0421,
       },
+      isAuthenticated: false,
       isReviewListVisible: false,
       isRegisterVisible: false
     };
   }
 
   async componentDidMount(){
+    this.focusListener = this.props.navigation.addListener('focus', this.resetAuthState);
     const granted = await PermissionsAndroid.check( PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION );
     if (granted) {
 
@@ -43,7 +46,24 @@ class Map extends Component{
     else {
       console.log( "ACCESS_FINE_LOCATION permission denied" );
     }
+
     this.loadGeoPoints();
+  }
+  
+  componentWillUnmount() {
+    // Removing the listener to prevent memory leaks
+    if (this.focusListener) {
+      this.focusListener();
+    }
+  }
+
+  resetAuthState = () => {
+    const accessToken = authStore.getState().accessToken;
+    if (accessToken === null) {
+        this.setState({isAuthenticated: false});
+    } else {
+        this.setState({isAuthenticated: true});
+    }
   }
 
   toggleReviewList = (_isReviewListVisible) => {
@@ -134,6 +154,7 @@ class Map extends Component{
         {this.state.isRegisterVisible && this.popupRegisterPin()}
         <FAB
           icon="plus"
+          visible={this.state.isAuthenticated}
           style={globalStyle.fab}
           onPress={() => this.toggleRegister(true)}
         />

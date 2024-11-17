@@ -226,16 +226,14 @@ export const modifyPwd = async (oldPassword, newPassword, navigation) => {
   }
 };
 
-export const verifyTokens = async (navigation) => {
+export const verifyTokens = async (setIsAuthenticated) => {
   const accessToken = authStore.getState().accessToken;
   const refreshToken = authStore.getState().refreshToken;
   clearTokens();
 
-  console.log("accessToken: " + accessToken);
-  console.log("refreshToken: " + refreshToken);
   // 최초 접속
   if (accessToken === null && refreshToken === null){
-    navigation.reset({routes: [{name: "Main"}]});
+
   }
   // 로컬 스토리지에 Token데이터가 있으면 -> 토큰들을 헤더에 넣어 검증 
   else{
@@ -246,7 +244,6 @@ export const verifyTokens = async (navigation) => {
 
     try {
       const response = await axios.post(`${URL}/user/refresh`, {}, {headers: headers_config});
-      console.log(response.data);
       if (response.status === 200){
         setAccessToken(response.data.tokens.accessToken);
         setRefreshToken(response.data.tokens.refreshToken);
@@ -254,6 +251,7 @@ export const verifyTokens = async (navigation) => {
         setName(response.data.name);
         setPhone(response.data.phone);
         setRoles(response.data.roles);
+        setIsAuthenticated(true);
       }
     } catch (error) {
       console.log(error);
@@ -264,7 +262,6 @@ export const verifyTokens = async (navigation) => {
 
       }
     }
-    navigation.reset({routes: [{name: "Main"}]});
   }
 };
 

@@ -1,6 +1,7 @@
 // Map.web.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {View, TouchableOpacity, TouchableWithoutFeedback, Modal} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import ReviewList from './ReviewList';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -8,6 +9,8 @@ import L from 'leaflet';
 import RegisterPin from './RegisterPin'
 import { FAB } from 'react-native-paper';
 import axios from "axios";
+import authStore from '../utils/authStore';
+import { verifyTokens } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -33,6 +36,7 @@ const MapRefresher = () => {
 };
 
 const Map = () => {
+  const [mapKey, setMapKey] = useState(0); // Key to force re-render
   const [points, setPoints] = useState([]);
   const [center, setCenter] = useState({
     latitude: 37.57002,
@@ -40,12 +44,35 @@ const Map = () => {
     latitudeDelta: 0.0922,  // Default zoom
     longitudeDelta: 0.0421,
   },);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isReviewListVisible, setReviewListVisible] = useState(false);
   const [isRegisterVisible, setRegisterVisible] = useState(false);
 
-  useEffect(() => {
-    loadGeoPoints();
-  }, []);
+  useEffect(()=>{
+    const timer = setTimeout(() => {
+      verifyTokens(setIsAuthenticated);
+    }, 1000);
+    return () => {
+      clearTimeout(timer);
+    };
+  },[])
+
+  useFocusEffect(
+    useCallback(() => {
+      loadGeoPoints();
+      resetAuthState();
+      setMapKey((prevKey) => prevKey + 1);
+    }, [])
+  );
+
+  const resetAuthState = () => {
+    const accessToken = authStore.getState().accessToken;
+    if (accessToken === null) {
+      setIsAuthenticated(false);
+    } else {
+      setIsAuthenticated(true);
+    }
+  }
 
   const toggleReviewList = (_isReviewListVisible) => {
     setReviewListVisible(_isReviewListVisible);
@@ -55,7 +82,7 @@ const Map = () => {
     setRegisterVisible(_isRegisterVisible);
   };
 
-  loadGeoPoints = () => {
+  const loadGeoPoints = () => {
     const pivot = {
       "location.lat": center.latitude,
       "location.lon": center.longitude
@@ -65,7 +92,7 @@ const Map = () => {
     });
   }
 
-  popupList=()=>{
+  const popupList=()=>{
     return(
       <Modal
       visible={isReviewListVisible}
@@ -84,7 +111,7 @@ const Map = () => {
     )
   };
 
-  popupRegisterPin=()=>{
+  const popupRegisterPin=()=>{
     return(
       <Modal
       visible={isRegisterVisible}
@@ -103,12 +130,12 @@ const Map = () => {
     )
   };
 
-  onRegionChangeComplete = (newRegion) => {
+  const onRegionChangeComplete = (newRegion) => {
     setCenter(newRegion);
     loadGeoPoints();
   };
 
-  RegionChangeHandler = () => {
+  const RegionChangeHandler = () => {
     const mapEvents = useMapEvents({
       moveend: () => {
         const newCenter = mapEvents.getCenter(); // Get the new center of the map
@@ -124,7 +151,12 @@ const Map = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <MapContainer center={[37.57002, 126.97962]} zoom={13} style={{ height: '80vh', width: '100%' }}>
+      <MapContainer 
+        key={mapKey} // Force re-render by changing the key
+        center={[center.latitude, center.longitude]}
+        zoom={13}
+        style={{ height: '80vh', width: '100%' }}
+        >
         <MapRefresher />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <RegionChangeHandler />
@@ -142,6 +174,7 @@ const Map = () => {
         ))}
         <FAB
           icon={(props) => <MaterialIcons name="add" size={24} color={props.color} />}
+          visible={isAuthenticated}
           style={globalStyle.fab}
           onPress={() => toggleRegister(true)}
         />
