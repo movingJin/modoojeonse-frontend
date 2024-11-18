@@ -234,7 +234,11 @@ export const saveGeoPoint = async (body, setIsFinished) => {
     }
   })
   .catch(error => {
-    showToast("error", error);
+    if(error.response.data.message === "Address already registered."){
+      showToast("error","이미 등록된 주소 입니다.");
+    }else{
+      showToast("error", error);
+    }
   })
   .finally(() => {
     setIsFinished(true);

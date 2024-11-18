@@ -297,7 +297,15 @@ export const saveGeoPoint = async (body, setIsFinished) => {
     }
   })
   .catch(error => {
-    customAlert("주소지 등록 실패", error);
+    if(error.response.data.message === "Address already registered."){
+      customAlert(
+        "주소지 등록 실패",
+        "이미 등록된 주소 입니다.",
+        null
+      );
+    }else{
+      customAlert("주소지 등록 실패", error);
+    }
   })
   .finally(() => {
     setIsFinished(true);
