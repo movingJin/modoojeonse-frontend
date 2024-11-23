@@ -13,7 +13,6 @@ const URL = 'http://192.168.0.3:58083'
 
 const RegisterPin = ({ toggleRegister }) => {
   const [address, setAddress] = useState('');
-  const [addressDetail, setAddressDetail] = useState('');
   const [type, setType] = useState('Apartment');
   const [errors, setErrors] = useState({}); 
   const [isFormValid, setIsFormValid] = useState(false);
@@ -22,7 +21,6 @@ const RegisterPin = ({ toggleRegister }) => {
   const [isFinished, setIsFinished] = useState(true); 
 
   const addressInputRef = useRef();
-  const addressDetailInputRef = useRef();
   const typeInputRef = useRef();
 
   useEffect(() => {
@@ -31,7 +29,7 @@ const RegisterPin = ({ toggleRegister }) => {
 
   useEffect(() => { 
     validateForm();
-  }, [address, addressDetail, type]);
+  }, [address, type]);
 
   useEffect(() => {
     if(!isLoading & isFinished){
@@ -134,13 +132,6 @@ const RegisterPin = ({ toggleRegister }) => {
           />
           <Button style={globalStyle.fab} mode="contained" onPress={() => setIsPostVisible(true)}>우편번호 조회</Button>
         </View>
-        <TextInput
-          label="상세주소"
-          value={addressDetail}
-          onChangeText={setAddressDetail}
-          ref={addressDetailInputRef}
-          style={globalStyle.textInput}
-        />
         <Text style={globalStyle.label} >주거유형</Text>
         <RadioButton.Group
           onValueChange={value => setType(value)} // Update state on selection

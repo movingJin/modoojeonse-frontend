@@ -31,9 +31,10 @@ class Map extends Component{
         latitudeDelta: 0.0922,  // Default zoom
         longitudeDelta: 0.0421,
       },
+      selectedMarker: null,
       isAuthenticated: false,
       isReviewListVisible: false,
-      isRegisterVisible: false
+      isRegisterVisible: false,
     };
   }
 
@@ -78,6 +79,11 @@ class Map extends Component{
     });
   };
 
+  selectMarker = (marker) => {
+    this.setState({selectedMarker: marker});
+    this.toggleReviewList(true);
+  };
+
   loadGeoPoints = () => {
     const pivot = {
       "location.lat": this.state.center.latitude,
@@ -99,7 +105,7 @@ class Map extends Component{
         <TouchableOpacity style={globalStyle.modalStyle} onPress={() => this.toggleReviewList(false)}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={globalStyle.modalWrapperStyle}>
-              <ReviewList toggleReviewList={this.toggleReviewList} />
+              <ReviewList toggleReviewList={this.toggleReviewList} selectedMarker={this.state.selectedMarker} />
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
@@ -146,7 +152,7 @@ class Map extends Component{
               coordinate={{latitude: point.location.lat, longitude: point.location.lon}}
               title={point.address}
               description={point.timestamp}
-              onCalloutPress={() => this.toggleReviewList(!this.state.isReviewListVisible)}
+              onCalloutPress={() => this.selectMarker(point)}
             />
           ))}
         </MapView>

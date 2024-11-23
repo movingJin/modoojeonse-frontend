@@ -44,6 +44,7 @@ const Map = () => {
     latitudeDelta: 0.0922,  // Default zoom
     longitudeDelta: 0.0421,
   },);
+  const [selectedMarker, setSelectedMarker] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isReviewListVisible, setReviewListVisible] = useState(false);
   const [isRegisterVisible, setRegisterVisible] = useState(false);
@@ -82,6 +83,11 @@ const Map = () => {
     setRegisterVisible(_isRegisterVisible);
   };
 
+  selectMarker = (marker) => {
+    setSelectedMarker(marker);
+    toggleReviewList(true);
+  };
+  
   const loadGeoPoints = () => {
     const pivot = {
       "location.lat": center.latitude,
@@ -103,7 +109,7 @@ const Map = () => {
         <TouchableOpacity style={globalStyle.modalStyle} onPress={() => toggleReviewList(false)}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={globalStyle.modalWrapperStyle}>
-              <ReviewList toggleReviewList={toggleReviewList} />
+              <ReviewList toggleReviewList={toggleReviewList} selectedMarker={selectedMarker} />
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
@@ -165,7 +171,7 @@ const Map = () => {
             <Popup>
               <div>
                 <p>{point.address}<br /> {point.timestamp}</p>
-                <button onClick={toggleReviewList} style={{ padding: '5px', cursor: 'pointer' }}>
+                <button onClick={() => selectMarker(point)} style={{ padding: '5px', cursor: 'pointer' }}>
                   리뷰 보기
                 </button>
               </div>

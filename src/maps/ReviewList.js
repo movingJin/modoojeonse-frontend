@@ -9,6 +9,7 @@
 import React, {Component} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
+import {Button} from 'react-native-paper';
 import ReviewDetail from './ReviewDetail';
 import globalStyle from "../styles/globalStyle"
 
@@ -31,7 +32,8 @@ class ReviewList extends Component{
       ],
       selectedReview: null,
       isReviewListVisible: true,
-      isDetailVisible: false
+      isDetailVisible: false,
+      isInsertVisible: false
     };
   }
 
@@ -44,6 +46,10 @@ class ReviewList extends Component{
     this.setState({isDetailVisible: _isDetailVisible});
   };
 
+  toggleInsert = (_isInsertVisible) => {
+    this.setState({isInsertVisible: _isInsertVisible});
+  };
+
   selectReview = (review) => {
     this.setState({selectedReview: review});
     this.toggleReviewDetail(true);
@@ -52,13 +58,15 @@ class ReviewList extends Component{
   render() {
     return (
       <View style={globalStyle.flashListWrapper}>
-        <Text style={globalStyle.itemHeader}>헤더</Text>
-        <Text style={globalStyle.itemBody}>바디</Text>
+        <Text style={globalStyle.itemHeader}>{this.props.selectedMarker.address}</Text>
         <FlashList
           data={this.state.datas}
           renderItem={this.renderItem}
           estimatedItemSize={200}
           />
+        <View style={{alignSelf: 'flex-end', flexDirection: 'row',}}>
+          <Button style={{marginTop: 16}} mode="contained" onPress={() => this.toggleInsert(true)}>리뷰 등록</Button>
+        </View>
         {this.state.isDetailVisible && this.popupDetail()}
       </View>
     );
