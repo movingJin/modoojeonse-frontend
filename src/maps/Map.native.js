@@ -12,6 +12,7 @@ import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
 import MapView, { Region, Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import { FAB } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 import ReviewList from './ReviewList';
 import RegisterPin from './RegisterPin'
 import authStore from '../utils/authStore';
@@ -109,6 +110,7 @@ class Map extends Component{
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
+        <Toast />
       </Modal>
     )
   };

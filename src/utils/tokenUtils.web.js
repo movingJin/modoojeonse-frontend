@@ -312,3 +312,23 @@ export const saveGeoPoint = async (body, setIsFinished) => {
     setIsFinished(true);
   });
 };
+
+export const saveReview = async (body, setIsLoading, setIsFinished) => {
+  const accessToken = authStore.getState().accessToken;
+  axios.post(`${URL}/review/save`, body, {headers: {'Authorization': "Bearer " + accessToken}}).then((response)=>{
+    if (response.status === 200){
+      setIsFinished(true);
+      customAlert("후기 등록 성공", "후기가 등록되었습니다.");
+    }
+  })
+  .catch(error => {
+    if(error.response.data.message === "Review is already registered."){
+      customAlert("중복된 후기","이미 등록하신 후기 입니다.");
+    }else{
+      customAlert("error", error);
+    }
+  })
+  .finally(() => {
+    setIsLoading(false);
+  });
+};

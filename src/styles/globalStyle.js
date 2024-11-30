@@ -61,6 +61,7 @@ export default StyleSheet.create({
     },
     itemHeader:{
       fontSize:18,
+      marginVertical: 8,
       fontWeight:'bold',
       textAlign:'center'
     },
@@ -102,5 +103,15 @@ export default StyleSheet.create({
     radioLabel: {
         fontSize: 12,
         marginLeft: 8,
+    },
+    formValidation: {
+      flex: 0.3,
+      justifyContent: 'center'
+    },
+    textValidation: {
+      fontSize:16,
+      fontWeight:'bold',
+      textAlign:'center',
+      paddingBottom:40
     },
   });

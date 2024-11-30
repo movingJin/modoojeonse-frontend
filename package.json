@@ -15,6 +15,7 @@
     "@actbase/react-daum-postcode": "^1.0.4",
     "@babel/preset-react": "^7.23.3",
     "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-native-community/datetimepicker": "^6.7.5",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/drawer": "^6.6.15",

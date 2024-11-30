@@ -90,6 +90,7 @@ const RegisterPin = ({ toggleRegister }) => {
   }
 
   const saveMarker = async () => {
+    setIsLoading(true);
     const apiKey = Platform.OS === "web" ? process.env.REACT_APP_GOOGLE_MAP_API: Config.REACT_APP_GOOGLE_MAP_API;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
     
@@ -121,6 +122,7 @@ const RegisterPin = ({ toggleRegister }) => {
   return (
     <View style={styles.container}>
       <View style={styles.formArea}>
+        <Text style={globalStyle.itemHeader}>주소지 등록</Text>
         <View style={styles.formAddress}>
           <TextInput
             label="주소"

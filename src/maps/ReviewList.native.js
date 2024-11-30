@@ -10,7 +10,10 @@ import React, {Component} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import {Button} from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 import ReviewDetail from './ReviewDetail';
+import RegisterReview from './RegisterReview';
+import authStore from '../utils/authStore';
 import globalStyle from "../styles/globalStyle"
 
 class ReviewList extends Component{
@@ -33,7 +36,8 @@ class ReviewList extends Component{
       selectedReview: null,
       isReviewListVisible: true,
       isDetailVisible: false,
-      isInsertVisible: false
+      isInsertVisible: false,
+      isAuthenticated: false
     };
   }
 
@@ -55,6 +59,26 @@ class ReviewList extends Component{
     this.toggleReviewDetail(true);
   };
 
+  resetAuthState = () => {
+    const accessToken = authStore.getState().accessToken;
+    if (accessToken === null) {
+        this.setState({isAuthenticated: false});
+    } else {
+        this.setState({isAuthenticated: true});
+    }
+  }
+
+  componentDidMount(){
+    //this.focusListener = this.props.navigation.addListener('focus', this.resetAuthState);
+    this.resetAuthState();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isInsertVisible !== this.state.isInsertVisible) {
+
+    }
+  }
+
   render() {
     return (
       <View style={globalStyle.flashListWrapper}>
@@ -65,9 +89,16 @@ class ReviewList extends Component{
           estimatedItemSize={200}
           />
         <View style={{alignSelf: 'flex-end', flexDirection: 'row',}}>
-          <Button style={{marginTop: 16}} mode="contained" onPress={() => this.toggleInsert(true)}>리뷰 등록</Button>
+          {this.state.isAuthenticated &&
+            <Button
+              visible={false}
+              style={{marginTop: 16}}
+              mode="contained"
+              onPress={() => this.toggleInsert(true)}>후기 등록</Button>
+          }
         </View>
         {this.state.isDetailVisible && this.popupDetail()}
+        {this.state.isInsertVisible && this.popupInsert()}
       </View>
     );
   }
@@ -103,6 +134,25 @@ class ReviewList extends Component{
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
+      </Modal>
+    )
+  };
+
+  popupInsert=()=>{
+    return(
+      <Modal
+      visible={this.state.isInsertVisible}
+      transparent={true}
+      animationType='slide'
+      onRequestClose={() => this.toggleInsert(!this.state.isInsertVisible)}>
+        <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}} onPress={() => this.toggleInsert(false)}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={globalStyle.modalWrapperStyle}>
+              <RegisterReview toggleInsert={this.toggleInsert} selectedMarker={this.props.selectedMarker}/>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+        <Toast />
       </Modal>
     )
   };
