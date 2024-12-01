@@ -198,6 +198,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker }) => {
             setDeposit(numericValue === '' ? 0 : parseInt(numericValue, 10));
           }}
           ref={depositInputRef}
+          right={<TextInput.Affix text="만원" />}
           style={globalStyle.textInput}
         />
         <TextInput

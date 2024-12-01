@@ -68,7 +68,9 @@ class ReviewList extends Component{
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.isInsertVisible !== this.state.isInsertVisible) {
-
+      if(!this.state.isInsertVisible){
+        findReviews({address: this.props.selectedMarker.address}, this.setReviews);
+      }
     }
   }
 
