@@ -3,6 +3,7 @@ import { Platform, View, ScrollView, TouchableOpacity, TouchableWithoutFeedback,
 import { TextInput, Button, RadioButton } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import authStore from '../utils/authStore';
+import Toast from 'react-native-toast-message';
 import { saveReview } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle"
 
@@ -161,6 +162,13 @@ const RegisterReview = ({ toggleInsert, selectedMarker }) => {
           style={globalStyle.textInput}
         />
         <TextInput
+          label="주소"
+          value={selectedMarker.address}
+          disabled={true}
+          mode="outlined"
+          style={globalStyle.textInput}
+        />
+        <TextInput
           label="상세 주소"
           value={addressDetail}
           mode="outlined"
@@ -261,6 +269,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker }) => {
         style={styles.bottomButton}>
           후기 등록
       </Button>
+      <Toast />
     </View>
   );
 };

@@ -209,6 +209,13 @@ const RegisterReview = ({ toggleInsert, selectedMarker }) => {
           style={globalStyle.textInput}
         />
         <TextInput
+          label="주소"
+          value={selectedMarker.address}
+          disabled={true}
+          mode="outlined"
+          style={globalStyle.textInput}
+        />
+        <TextInput
           label="상세 주소"
           value={addressDetail}
           mode="outlined"

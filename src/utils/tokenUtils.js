@@ -246,6 +246,20 @@ export const saveGeoPoint = async (body, setIsFinished) => {
   });
 };
 
+export const findReviews = async (params, setReviews) => {
+  axios.get(`${URL}/review/search-native`, {params}).then((response)=>{
+    if (response.status === 200){
+      setReviews(response.data);
+    }
+  })
+  .catch(error => {
+    console.log(error);
+  })
+  .finally(() => {
+
+  });
+};
+
 export const saveReview = async (body, setIsLoading, setIsFinished) => {
   const accessToken = authStore.getState().accessToken;
   axios.post(`${URL}/review/save`, body, {headers: {'Authorization': "Bearer " + accessToken}}).then((response)=>{

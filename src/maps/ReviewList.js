@@ -10,7 +10,7 @@ import React, {Component} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import {Button} from 'react-native-paper';
-import Toast from 'react-native-toast-message';
+import { findReviews } from '../utils/tokenUtils';
 import ReviewDetail from './ReviewDetail';
 import RegisterReview from './RegisterReview';
 import authStore from '../utils/authStore';
@@ -20,25 +20,17 @@ class ReviewList extends Component{
   constructor(props){
     super(props);
     this.state={
-      datas: [
-        {id: 1, title: "203호 살았던 사람입니다.", body: "룸컨디션 좋습니다.", address: "서울시 영등포구 신길로 15나길 11 (글로리홈) 203호", isReturnDelayed: false, deposit: 90000000, fromDate: "2019-12-31", toDate: "9999-12-31", contractDate: "2019-12-05", rating: 5, lastEditTime: "2024-03-19", img:'require(그림경로)'},
-        {id: 2, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 3, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 4, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 5, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 6, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 7, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 8, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 9, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 10, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'},
-        {id: 11, title: "test_title", body: "Contests", address: "연강빌딩 705호", isReturnDelayed: false, deposit: 90000000, fromDate: "2021-07-14", toDate: "", contractDate: "2021-07-01", rating: 4, lastEditTime: "2023-11-05", img:'require(그림경로)'}
-      ],
+      reviews: [],
       selectedReview: null,
       isReviewListVisible: true,
       isDetailVisible: false,
       isInsertVisible: false,
       isAuthenticated: false
     };
+  }
+
+  setReviews = (_reviews) => {
+    this.setState({reviews: _reviews});
   }
 
   toggleReviewList = (_isReviewListVisible) => {
@@ -71,6 +63,7 @@ class ReviewList extends Component{
   componentDidMount(){
     //this.focusListener = this.props.navigation.addListener('focus', this.resetAuthState);
     this.resetAuthState();
+    findReviews({address: this.props.selectedMarker.address}, this.setReviews);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -84,7 +77,7 @@ class ReviewList extends Component{
       <View style={globalStyle.flashListWrapper}>
         <Text style={globalStyle.itemHeader}>{this.props.selectedMarker.address}</Text>
         <FlashList
-          data={this.state.datas}
+          data={this.state.reviews}
           renderItem={this.renderItem}
           estimatedItemSize={200}
           />
@@ -112,7 +105,7 @@ class ReviewList extends Component{
               <Text style={globalStyle.itemBody}>{item.body}</Text>
               <View style={globalStyle.footer}>
                 <Text style={globalStyle.itemPublisher}>{item.rating}</Text>
-                <Text style={globalStyle.itemIssueDate}>{item.lastEditTime}</Text>
+                <Text style={globalStyle.itemIssueDate}>{item.timestamp}</Text>
               </View>
           </View>
           
@@ -152,7 +145,6 @@ class ReviewList extends Component{
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
-        <Toast />
       </Modal>
     )
   };
