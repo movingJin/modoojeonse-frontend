@@ -4,22 +4,22 @@ import { TextInput, Button, RadioButton } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import authStore from '../utils/authStore';
 import Toast from 'react-native-toast-message';
-import { saveReview } from '../utils/tokenUtils';
+import { saveReview, editReview } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle"
 
 const URL = 'http://192.168.0.3:58083'
 
-const RegisterReview = ({ toggleInsert, selectedMarker }) => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [addressDetail, setAddressDetail] = useState('');
-  const [contractType, setContractType] = useState('Monthly');
-  const [isReturnDelayed, setIsReturnDelayed] = useState(false);
-  const [deposit, setDeposit] = useState(0);
-  const [contractDate, setContractDate] = useState('');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [rating, setRating] = useState(1);
+const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
+  const [title, setTitle] = useState(selectedReview ? selectedReview.title: '');
+  const [body, setBody] = useState(selectedReview ? selectedReview.body: '');
+  const [addressDetail, setAddressDetail] = useState(selectedReview ? selectedReview.addressDetail: '');
+  const [contractType, setContractType] = useState(selectedReview ? selectedReview.contractType: 'Monthly');
+  const [isReturnDelayed, setIsReturnDelayed] = useState(selectedReview ? selectedReview.isReturnDelayed: false);
+  const [deposit, setDeposit] = useState(selectedReview ? selectedReview.deposit: 0);
+  const [contractDate, setContractDate] = useState(selectedReview? selectedReview.contractDate.split('T')[0]: '');
+  const [fromDate, setFromDate] = useState(selectedReview? selectedReview.fromDate.split('T')[0]: '');
+  const [toDate, setToDate] = useState(selectedReview? selectedReview.toDate.split('T')[0]: '');
+  const [rating, setRating] = useState(selectedReview ? selectedReview.rating: 1);
   const [lastDate, setLastDate] = useState('');
 
   const [errors, setErrors] = useState({}); 
@@ -121,7 +121,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker }) => {
     const payload = {
       title,
       body,
-      address: selectedMarker.address,
+      address: selectedReview? selectedReview.address: selectedMarker.address,
       addressDetail,
       contractType,
       isReturnDelayed,
@@ -135,7 +135,12 @@ const RegisterReview = ({ toggleInsert, selectedMarker }) => {
     };
     setIsFinished(false);
     setIsLoading(true);
-    saveReview(payload, setIsLoading, setIsFinished);
+    if(selectedReview){
+      payload.id = selectedReview.id;
+      editReview(payload, setIsLoading, setIsFinished);
+    }else{
+      saveReview(payload, setIsLoading, setIsFinished);
+    }
   };
 
   return (
@@ -163,7 +168,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker }) => {
         />
         <TextInput
           label="주소"
-          value={selectedMarker.address}
+          value={selectedReview ? selectedReview.address: selectedMarker.address}
           disabled={true}
           mode="outlined"
           style={globalStyle.textInput}

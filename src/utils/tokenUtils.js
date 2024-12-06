@@ -260,6 +260,21 @@ export const findReviews = async (params, setReviews) => {
   });
 };
 
+export const findReviewById = async (params, setReview) => {
+  const accessToken = authStore.getState().accessToken;
+  axios.get(`${URL}/review/search-id`, {params, headers: {'Authorization': "Bearer " + accessToken}}).then((response)=>{
+    if (response.status === 200){
+      setReview(response.data);
+    }
+  })
+  .catch(error => {
+    console.log(error);
+  })
+  .finally(() => {
+
+  });
+};
+
 export const saveReview = async (body, setIsLoading, setIsFinished) => {
   const accessToken = authStore.getState().accessToken;
   axios.post(`${URL}/review/save`, body, {headers: {'Authorization': "Bearer " + accessToken}}).then((response)=>{
@@ -271,6 +286,26 @@ export const saveReview = async (body, setIsLoading, setIsFinished) => {
   .catch(error => {
     if(error.response.data.message === "Review is already registered."){
       showToast("error","이미 등록하신 후기 입니다.");
+    }else{
+      showToast("error", error);
+    }
+  })
+  .finally(() => {
+    setIsLoading(false);
+  });
+};
+
+export const editReview = async (body, setIsLoading, setIsFinished) => {
+  const accessToken = authStore.getState().accessToken;
+  axios.post(`${URL}/review/edit`, body, {headers: {'Authorization': "Bearer " + accessToken}}).then((response)=>{
+    if (response.status === 200){
+      setIsFinished(true);
+      showToast("success", "후기가 수정되었습니다.");
+    }
+  })
+  .catch(error => {
+    if(error.response.data.message === "Review is not found."){
+      showToast("error","등록되지 않은 후기 입니다.");
     }else{
       showToast("error", error);
     }
