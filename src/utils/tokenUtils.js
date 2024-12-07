@@ -314,3 +314,23 @@ export const editReview = async (body, setIsLoading, setIsFinished) => {
     setIsLoading(false);
   });
 };
+
+export const deleteReview = async (body, setIsFinished) => {
+  const accessToken = authStore.getState().accessToken;
+  axios.post(`${URL}/review/delete`, body, {headers: {'Authorization': "Bearer " + accessToken}}).then((response)=>{
+    if (response.status === 200){
+      setIsFinished(true);
+      showToast("success", "후기가 삭제되었습니다.");
+    }
+  })
+  .catch(error => {
+    if(error.response.data.message === "Review is not found."){
+      showToast("error","등록되지 않은 후기 입니다.");
+    }else{
+      showToast("error", error);
+    }
+  })
+  .finally(() => {
+
+  });
+};

@@ -2,7 +2,7 @@ import React, {Component, useState, useEffect} from 'react';
 import {Pressable, View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 import {Button} from 'react-native-paper';
 import RegisterReview from './RegisterReview';
-import { findReviewById } from '../utils/tokenUtils';
+import { findReviewById, deleteReview } from '../utils/tokenUtils';
 import authStore from '../utils/authStore';
 import globalStyle from "../styles/globalStyle"
 import { FlashList } from "@shopify/flash-list";
@@ -13,7 +13,8 @@ export default class ReviewDetail extends Component {
     this.state={
       selectedItem: this.props.review,
       isAuthenticated: false,
-      isInsertVisible: false
+      isInsertVisible: false,
+      isFinished: true
     };
   }
 
@@ -34,15 +35,28 @@ export default class ReviewDetail extends Component {
     this.setState({isInsertVisible: _isInsertVisible});
   };
 
+  setIsFinished = (_isFinished) => {
+    this.setState({isFinished: _isFinished});
+  }
+
   componentDidMount(){
     this.resetAuthState();
-    findReviewById({id: this.state.selectedItem.id}, this.setReview);
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (prevState.isAuthenticated !== this.state.isAuthenticated) {
+      if(this.state.isAuthenticated){
+        findReviewById({id: this.state.selectedItem.id}, this.setReview);
+      }
+    }
     if (prevState.isInsertVisible !== this.state.isInsertVisible) {
       if(!this.state.isInsertVisible){
         findReviewById({id: this.state.selectedItem.id}, this.setReview);
+      }
+    }
+    if (prevState.isFinished !== this.state.isFinished) {
+      if(this.state.isFinished){
+        this.props.toggleReviewDetail(false);
       }
     }
   }
@@ -70,12 +84,26 @@ export default class ReviewDetail extends Component {
       <View style={globalStyle.container}>
         <Text style={globalStyle.titleText}>{this.state.selectedItem.title}</Text>
         <View style={{alignSelf: 'flex-end', flexDirection: 'row',}}>
-          {this.state.isAuthenticated &&
+          {(this.state.isAuthenticated &&
+           (authStore.getState().email === this.state.selectedItem.author)) &&
             <Button
               visible={false}
-              // style={{marginTop: 16}}
+              disabled={!this.state.isFinished}
+              style={{marginRight: 16}}
               mode="contained"
               onPress={() => this.toggleInsert(true)}>수정</Button>
+          }
+          {(this.state.isAuthenticated &&
+            (authStore.getState().email === this.state.selectedItem.author)) &&
+            <Button
+              visible={false}
+              disabled={!this.state.isFinished}
+              // style={{marginTop: 16}}
+              mode="contained"
+              onPress={() => {
+                this.setIsFinished(false);
+                deleteReview(this.state.selectedItem, this.setIsFinished)
+              }}>삭제</Button>
           }
         </View>
         <Text >주소: {this.state.selectedItem.address}</Text>

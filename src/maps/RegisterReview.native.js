@@ -130,7 +130,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
       fromDate: fromDate+"T00:00:00.000Z",
       toDate: toDate+"T00:00:00.000Z",
       rating,
-      author: authStore.getState().email,
+      author: selectedReview? selectedReview.author: authStore.getState().email,
       type: contractType
     };
     setIsFinished(false);

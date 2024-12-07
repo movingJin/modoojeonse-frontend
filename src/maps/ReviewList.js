@@ -72,6 +72,11 @@ class ReviewList extends Component{
         findReviews({address: this.props.selectedMarker.address}, this.setReviews);
       }
     }
+    if (prevState.isDetailVisible !== this.state.isDetailVisible) {
+      if(!this.state.isDetailVisible){
+        findReviews({address: this.props.selectedMarker.address}, this.setReviews);
+      }
+    }
   }
 
   render() {
@@ -125,7 +130,7 @@ class ReviewList extends Component{
         <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}} onPress={() => this.toggleReviewDetail(false)}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={globalStyle.modalWrapperStyle}>
-              <ReviewDetail review={this.state.selectedReview} />
+              <ReviewDetail toggleReviewDetail={this.toggleReviewDetail} review={this.state.selectedReview} />
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>
