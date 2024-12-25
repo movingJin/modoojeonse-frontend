@@ -1,10 +1,13 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Map from './maps/Map'
 import News from './News'
+import ChatBot from './ChatBot';
 
-const Tab = createBottomTabNavigator();
+const Tab = (Platform.OS === 'web') ? createMaterialTopTabNavigator(): createBottomTabNavigator();
 
 const HomeTab = () => {
     return (
@@ -29,9 +32,9 @@ const HomeTab = () => {
                 }}
                 />
             <Tab.Screen
-                name='Gpt Article'
-                component={News}
-                initialParams={{title: "GPT article"}}
+                name='ChatBot'
+                component={ChatBot}
+                initialParams={{title: "ChatBot"}}
                 options={{
                     tabBarIcon: ({color, size}) => (
                         <Icon name="article" color={color} size={size} />
