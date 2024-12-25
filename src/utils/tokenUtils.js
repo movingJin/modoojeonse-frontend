@@ -3,8 +3,9 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import authStore from './authStore';
 import { StackActions } from '@react-navigation/native';
+import Config from "react-native-config";
 
-const URL = 'http://192.168.0.3:58083'
+const URL = Config.API_SERVER_URL;
 
 const showToast = (type, text) =>{
     Toast.show({

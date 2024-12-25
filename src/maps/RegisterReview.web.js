@@ -5,8 +5,6 @@ import authStore from '../utils/authStore';
 import { saveReview, editReview } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle"
 
-const URL = 'http://192.168.0.3:58083'
-
 const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
   const [title, setTitle] = useState(selectedReview ? selectedReview.title: '');
   const [body, setBody] = useState(selectedReview ? selectedReview.body: '');

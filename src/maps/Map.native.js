@@ -18,8 +18,9 @@ import RegisterPin from './RegisterPin'
 import authStore from '../utils/authStore';
 import globalStyle from "../styles/globalStyle"
 import axios from "axios";
+import Config from "react-native-config";
 
-const URL = 'http://192.168.0.3:58083'
+const URL = Config.API_SERVER_URL;
 
 class Map extends Component{
   constructor(props){

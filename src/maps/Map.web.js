@@ -14,7 +14,7 @@ import { verifyTokens } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const URL = 'http://192.168.0.3:58083'
+const URL = process.env.API_SERVER_URL;
 
 // Define custom marker icon
 delete L.Icon.Default.prototype._getIconUrl;

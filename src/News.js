@@ -2,8 +2,9 @@ import React, {Component, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, ScrollView, Platform} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import axios from "axios";
+import Config from "react-native-config";
 
-const URL = 'http://192.168.0.3:58083'
+const URL = Platform.OS === "web" ? process.env.API_SERVER_URL: Config.API_SERVER_URL;
 
 export default class News extends Component {
 

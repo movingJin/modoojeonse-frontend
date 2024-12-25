@@ -5,7 +5,7 @@ import axios from "axios";
 import authStore from './authStore';
 import { StackActions } from '@react-navigation/native';
 
-const URL = 'http://192.168.0.3:58083'
+const URL = process.env.API_SERVER_URL;
 
 const {
   setAccessToken,

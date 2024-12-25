@@ -9,8 +9,6 @@ import axios from "axios";
 import Config from "react-native-config";
 import globalStyle from "../styles/globalStyle"
 
-const URL = 'http://192.168.0.3:58083'
-
 const RegisterPin = ({ toggleRegister }) => {
   const [address, setAddress] = useState('');
   const [type, setType] = useState('Apartment');
