@@ -2,11 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, StyleSheet, View, TextInput, Text, TouchableOpacity, Platform } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import io from 'socket.io-client';
+import Config from "react-native-config";
+
+const URL = Platform.OS === "web" ? process.env.CHATBOT_SERVER_URL: Config.CHATBOT_SERVER_URL;
 
 const ChatBot = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const socket = io('ws://192.168.0.3:58084'); // Replace with your WebSocket server URL
+  const socket = io(URL); // Replace with your WebSocket server URL
   
   useEffect(() => {
     // Listen for server responses
