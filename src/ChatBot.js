@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SafeAreaView, StyleSheet, View, TextInput, Text, TouchableOpacity, Platform } from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import io from 'socket.io-client';
@@ -9,16 +9,28 @@ const URL = Platform.OS === "web" ? process.env.CHATBOT_SERVER_URL: Config.CHATB
 const ChatBot = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const socket = io(URL); // Replace with your WebSocket server URL
-  
+  const socket = useRef(null); // Use a ref to persist socket instance
+
   useEffect(() => {
+    // Initialize socket only once
+    socket.current = io(URL, { transports: ["websocket"] });
+
+    socket.current.on('connect', () => {
+      console.log('Connected to server:', socket.current.id);
+    });
+
     // Listen for server responses
-    socket.on('server_response', (data) => {
+    socket.current.on('server_response', (data) => {
       addMessage({ text: data.message, sender: 'server' });
     });
 
+    socket.current.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason);
+    });
+
+    // Clean up socket on unmount
     return () => {
-      socket.disconnect(); // Cleanup connection when component unmounts
+      socket.current.disconnect();
     };
   }, []);
 
@@ -29,7 +41,7 @@ const ChatBot = () => {
   const sendMessage = () => {
     if (message.trim().length > 0) {
       addMessage({ text: message, sender: 'user' });
-      socket.emit('chat', message);
+      socket.current.emit('chat', message);
       setMessage('');
     }
   };
