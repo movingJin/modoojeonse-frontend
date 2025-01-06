@@ -69,5 +69,17 @@
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "description": "modoojeonse react-native app",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movingJin/modoojeonse-frontend.git"
+  },
+  "author": "movingjin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/movingJin/modoojeonse-frontend/issues"
+  },
+  "homepage": "https://github.com/movingJin/modoojeonse-frontend#readme"
 }
