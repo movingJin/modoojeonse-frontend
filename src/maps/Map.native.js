@@ -6,11 +6,13 @@
  * @flow strict-local
  */
 
-import React, {Component, useState, useEffect} from 'react';
+import React, {Component, createRef, useEffect} from 'react';
 import {Pressable, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, Image} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
 import MapView, { Region, Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import MapViewComponent from './MapViewComponent'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { FAB } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ReviewList from './ReviewList';
@@ -25,6 +27,7 @@ const URL = Config.API_SERVER_URL;
 class Map extends Component{
   constructor(props){
     super(props);
+    this.mapRef = createRef(); // Ref for MapView
     this.state={
       points: [],
       center: {
@@ -140,13 +143,55 @@ class Map extends Component{
     this.loadGeoPoints();
   };
 
+  handlePlaceSelect = (data, details) => {
+    // Update region and marker with selected place details
+    const { lat, lng } = details.geometry.location;
+
+    const newRegion = {
+      latitude: lat,
+      longitude: lng,
+      latitudeDelta: this.state.center.latitudeDelta,
+      longitudeDelta: this.state.center.longitudeDelta
+    };
+
+    console.log(lat, lng);
+    this.mapRef.current.animateToRegion(newRegion, 1000);
+  };
+
   render() {
     return (
       <View style={{ flex:1 }}>
-        <MapView
+        <GooglePlacesAutocomplete
+          placeholder="장소, 주소 검색"
+          fetchDetails={true}
+          onPress={this.handlePlaceSelect}
+          onFail={(error) => console.log(error)}
+          onNotFound={() => console.log("no results")}
+          minLength={2}
+          query={{
+            key: Config.REACT_APP_GOOGLE_MAP_API,
+            language: "ko",
+            components: "country:kr",
+          }}
+          debounce={300}
+          styles={{
+            container: {
+              flex: 0,
+              position: "absolute",
+              width: "100%",
+              zIndex: 1,
+            },
+            listView: { backgroundColor: "white" },
+          }}
+        />
+
+
+        <MapViewComponent
+          mapRef={(ref) => (this.mapRef.current = ref)} // Bind ref directly
           style={{ flex: 1 }}
           provider={PROVIDER_GOOGLE}
           initialRegion={this.state.center}
+          region={this.state.center}
           onRegionChangeComplete={this.onRegionChangeComplete}
         >
           {this.state.points.map(point => (
@@ -158,7 +203,7 @@ class Map extends Component{
               onCalloutPress={() => this.selectMarker(point)}
             />
           ))}
-        </MapView>
+        </MapViewComponent>
         {this.state.isReviewListVisible && this.popupList()}
         {this.state.isRegisterVisible && this.popupRegisterPin()}
         <FAB

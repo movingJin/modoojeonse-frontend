@@ -37,6 +37,8 @@
     "react-native-eject": "^0.2.0",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "^2.14.1",
+    "react-native-get-random-values": "^1.11.0",
+    "react-native-google-places-autocomplete": "^2.5.7",
     "react-native-maps": "^1.10.0",
     "react-native-paper": "^4.12.8",
     "react-native-reanimated": "^3.6.2",

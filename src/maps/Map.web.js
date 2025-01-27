@@ -1,6 +1,7 @@
 // Map.web.js
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {View, TouchableOpacity, TouchableWithoutFeedback, Modal} from 'react-native';
+import { TextInput } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import ReviewList from './ReviewList';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
@@ -35,6 +36,18 @@ const MapRefresher = () => {
   return null;
 };
 
+const MoveMapFocus = ({ center }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (center) {
+      map.flyTo([center.latitude, center.longitude], map.getZoom()); // Adjust map zoom to remain unchanged
+    }
+  }, [center, map]);
+
+  return null;
+};
+
 const Map = () => {
   const [mapKey, setMapKey] = useState(0); // Key to force re-render
   const [points, setPoints] = useState([]);
@@ -48,8 +61,26 @@ const Map = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isReviewListVisible, setReviewListVisible] = useState(false);
   const [isRegisterVisible, setRegisterVisible] = useState(false);
+  const autocompleteRef = useRef(null);
 
   useEffect(()=>{
+    const input = autocompleteRef.current;
+
+    if (window.google && input) {
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.setFields(['geometry', 'name']);
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry && place.geometry.location) {
+          const location = place.geometry.location;
+          setCenter({
+            latitude: location.lat(),
+            longitude: location.lng(),
+          });
+        }
+      });
+    }
+
     const timer = setTimeout(() => {
       verifyTokens(setIsAuthenticated);
     }, 1000);
@@ -157,6 +188,18 @@ const Map = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <input
+        ref={autocompleteRef}
+        type="text"
+        placeholder="장소, 주소 검색"
+        style={{
+          padding: '10px',
+          width: '100%',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+        }}
+      />
+
       <MapContainer 
         key={mapKey} // Force re-render by changing the key
         center={[center.latitude, center.longitude]}
@@ -165,6 +208,7 @@ const Map = () => {
         >
         <MapRefresher />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MoveMapFocus center={center} />
         <RegionChangeHandler />
         {points.map(point => (
           <Marker key={point.id} position={[point.location.lat, point.location.lon]}>
