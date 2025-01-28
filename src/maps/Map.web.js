@@ -64,9 +64,8 @@ const Map = () => {
   const autocompleteRef = useRef(null);
 
   useEffect(()=>{
+    const loadGooglePlaces = () => {
     const input = autocompleteRef.current;
-
-    if (window.google && input) {
       const autocomplete = new google.maps.places.Autocomplete(input);
       autocomplete.setFields(['geometry', 'name']);
       autocomplete.addListener('place_changed', () => {
@@ -79,6 +78,17 @@ const Map = () => {
           });
         }
       });
+    };
+
+    if (!window.google || !window.google.maps.places) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAP_API}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = loadGooglePlaces;
+      document.body.appendChild(script);
+    } else {
+      loadGooglePlaces();
     }
 
     const timer = setTimeout(() => {
