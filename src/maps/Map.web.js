@@ -12,7 +12,7 @@ import { FAB } from 'react-native-paper';
 import axios from "axios";
 import authStore from '../utils/authStore';
 import { verifyTokens } from '../utils/tokenUtils';
-import globalStyle from "../styles/globalStyle"
+import globalStyle from "../styles/globalStyle";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const URL = process.env.API_SERVER_URL;
@@ -65,7 +65,7 @@ const Map = () => {
 
   useEffect(()=>{
     const loadGooglePlaces = () => {
-    const input = autocompleteRef.current;
+      const input = autocompleteRef.current;
       const autocomplete = new google.maps.places.Autocomplete(input);
       autocomplete.setFields(['geometry', 'name']);
       autocomplete.addListener('place_changed', () => {
@@ -106,6 +106,61 @@ const Map = () => {
       setMapKey((prevKey) => prevKey + 1);
     }, [])
   );
+
+  const searchFirstSuggestion = async () => {
+    const input = autocompleteRef.current.value.trim();
+    if (window.google && window.google.maps.places) {
+      try {
+        const service = new google.maps.places.AutocompleteService();
+        const predictions = await new Promise((resolve, reject) => {
+          service.getPlacePredictions({ input }, (res, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && res.length > 0) {
+              resolve(res);
+            } else {
+              reject('No suggestions found or autocomplete service failed.');
+            }
+          });
+        });
+  
+        // Get details of the first suggestion
+        const firstPrediction = predictions[0];
+        if (firstPrediction) {
+          const placesService = new google.maps.places.PlacesService(document.createElement('div'));
+          
+          // Fetch place details using the `place_id`
+          const placeDetails = await new Promise((resolve, reject) => {
+            placesService.getDetails({ placeId: firstPrediction.place_id }, (res, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK) {
+                resolve(res);
+              } else {
+                reject('Place details fetch failed.');
+              }
+            });
+          });
+  
+          const location = placeDetails.geometry?.location;
+          if (location) {
+            setCenter({
+              latitude: location.lat(),
+              longitude: location.lng(),
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching first suggestion:', error);
+        alert('No valid locations found for the entered text.');
+      }
+    } else {
+      console.error('Google Maps Places library is not available.');
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent form submission or default behavior
+      searchFirstSuggestion(); // Call the search function
+    }
+  };
 
   const resetAuthState = () => {
     const accessToken = authStore.getState().accessToken;
@@ -202,6 +257,7 @@ const Map = () => {
         ref={autocompleteRef}
         type="text"
         placeholder="장소, 주소 검색"
+        onKeyDown={handleKeyPress}
         style={{
           padding: '10px',
           width: '100%',
