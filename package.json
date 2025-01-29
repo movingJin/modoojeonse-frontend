@@ -6,8 +6,9 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start --port 8082",
-    "build-react": "webpack --mode production",
-    "start-react": "webpack serve --config ./webpack.config.js --mode development",
+    "build-react": "webpack --config ./webpack.prod.js",
+    "start-react": "webpack serve --config ./webpack.dev.js",
+    "deploy-react": "webpack serve --config ./webpack.prod.js --static",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -67,7 +68,8 @@
     "metro-react-native-babel-preset": "0.67.0",
     "react-test-renderer": "17.0.2",
     "style-loader": "^4.0.0",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "jest": {
     "preset": "react-native"

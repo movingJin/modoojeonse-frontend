@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const appDirectory = path.resolve(__dirname);
 const {presets} = require(`${appDirectory}/babel.config.js`);
@@ -100,12 +101,11 @@ module.exports = {
     new Dotenv({
       path: './.env', // Path to your .env file
     }),
-  ],
-  devServer: {
-    port: 8083,
-  	open: true,
-    historyApiFallback: true,
-    static: path.resolve(__dirname, 'dist'),
-    hot: true,
-  }
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+        reportFilename: 'bundle-report.html',
+        openAnalyzer: false,
+        excludeAssets: [/node_modules/]
+    }),
+  ]
 };
