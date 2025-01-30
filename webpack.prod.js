@@ -4,11 +4,6 @@ const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
     mode: 'production',
-    devServer: {
-        port: 8083,
-        open: true,
-        static: path.resolve(__dirname, 'dist'),
-    },
     performance: {
         hints: false,
         maxEntrypointSize: 512000,
