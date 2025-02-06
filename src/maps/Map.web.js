@@ -62,6 +62,7 @@ const Map = () => {
   const [isReviewListVisible, setReviewListVisible] = useState(false);
   const [isRegisterVisible, setRegisterVisible] = useState(false);
   const autocompleteRef = useRef(null);
+  const lastFetchCenter = useRef(null);
 
   useEffect(()=>{
     const loadGooglePlaces = () => {
@@ -233,6 +234,13 @@ const Map = () => {
   };
 
   const onRegionChangeComplete = (newRegion) => {
+    if (lastFetchCenter.current &&
+      lastFetchCenter.current.latitude === newRegion.latitude &&
+      lastFetchCenter.current.longitude === newRegion.longitude) {
+      return; // Skip API call if center hasn't changed
+    }
+    lastFetchCenter.current = { ...newRegion }; // Update last fetched center
+
     setCenter(newRegion);
     loadGeoPoints();
   };

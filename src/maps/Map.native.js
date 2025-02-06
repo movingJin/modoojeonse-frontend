@@ -28,6 +28,7 @@ class Map extends Component{
   constructor(props){
     super(props);
     this.mapRef = createRef(); // Ref for MapView
+    this.lastFetchCenter = createRef();
     this.state={
       points: [],
       center: {
@@ -139,6 +140,13 @@ class Map extends Component{
   };
 
   onRegionChangeComplete = (newRegion) => {
+    if (this.lastFetchCenter.current &&
+      this.lastFetchCenter.current.latitude === newRegion.latitude &&
+      this.lastFetchCenter.current.longitude === newRegion.longitude) {
+      return; // Skip API call if center hasn't changed
+    }
+    this.lastFetchCenter.current = { ...newRegion }; // Update last fetched center
+
     this.setState({ center: newRegion });
     this.loadGeoPoints();
   };
