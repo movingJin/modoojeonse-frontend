@@ -139,11 +139,23 @@ class Map extends Component{
     )
   };
 
+  getHarversineDistance(lat1, lon1, lat2, lon2){
+    const theta1 = lat1 * Math.PI/180;
+    const theta2 = lat2 * Math.PI/180;
+    const delta = (lon2 - lon1) * Math.PI/180;
+    const R = 6371e3;
+
+    const d = Math.acos(Math.sin(theta1) * Math.sin(theta2) + Math.cos(theta1) * Math.cos(theta2) * Math.cos(delta)) * R;
+    return d;
+  }
+
   onRegionChangeComplete = (newRegion) => {
-    if (this.lastFetchCenter.current &&
-      this.lastFetchCenter.current.latitude === newRegion.latitude &&
-      this.lastFetchCenter.current.longitude === newRegion.longitude) {
-      return; // Skip API call if center hasn't changed
+    if(this.lastFetchCenter.current){
+      const distance =
+        this.getHarversineDistance(this.lastFetchCenter.current.latitude, this.lastFetchCenter.current.longitude, newRegion.latitude, newRegion.longitude);
+      if(distance <= 0){
+        return;
+      }
     }
     this.lastFetchCenter.current = { ...newRegion }; // Update last fetched center
 
@@ -161,6 +173,8 @@ class Map extends Component{
       latitudeDelta: this.state.center.latitudeDelta,
       longitudeDelta: this.state.center.longitudeDelta
     };
+    this.lastFetchCenter.current = { ...newRegion }; // Update last fetched center
+    this.setState({ center: newRegion });
 
     console.log(lat, lng);
     this.mapRef.current.animateToRegion(newRegion, 1000);
