@@ -184,7 +184,7 @@ export const verifyTokens = async (navigation) => {
   else{
     const headers_config = {
       'Authorization': `dummy token to reissue`,
-      'Refresh_Token': `Bearer ${refreshToken}`  
+      'Refresh-Token': `Bearer ${refreshToken}`  
     };
 
     try {
