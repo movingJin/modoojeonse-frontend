@@ -239,7 +239,7 @@ export const verifyTokens = async (setIsAuthenticated) => {
   else{
     const headers_config = {
       'Authorization': `dummy token to reissue`,
-      'Refresh_Token': `Bearer ${refreshToken}`  
+      'Refresh-Token': `Bearer ${refreshToken}`  
     };
 
     try {
