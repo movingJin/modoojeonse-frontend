@@ -1,0 +1,43 @@
+name: Modoojeonse release to web
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build react-native-web
+        run: |
+          npm ci
+          npm run build-react
+          echo "${{ secrets.ENV_FILE }}" | base64 --decode > ./.env
+
+
+  deploy:
+
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs: build
+    
+    steps:
+    - name: Deploy to Instance
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{secrets.PROD_HOST}}
+        username: ${{secrets.PROD_USERNAME}}
+        key: ${{secrets.PROD_PRIVATE_KEY}}
+        port: ${{secrets.PROD_PORT}}
+        script: |
+          cd ${{ format('{0}/modoojeonse-front', secrets.SERVICE_ROOT) }}
+          PATH="/var/packages/ContainerManager/target/usr/bin/:$PATH"
+          pwd
+          docker-compose build
+          docker-compose down
+          docker-compose up -d
+          docker image prune -f
