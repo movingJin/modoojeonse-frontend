@@ -16,9 +16,9 @@ jobs:
           node-version: 22
       - name: Build react-native-web
         run: |
+          echo "${{ secrets.ENV_FILE }}" | base64 --decode > ./.env
           npm ci
           npm run build-react
-          echo "${{ secrets.ENV_FILE }}" | base64 --decode > ./.env
       - name: Transfer dist directory
         uses: appleboy/scp-action@master
         with:
