@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, TextInput, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { signIn } from '../utils/tokenUtils';
+import { Text, TextInput, Button } from 'react-native-paper';
+import globalStyle from "../styles/globalStyle"
 
 const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -43,18 +45,27 @@ const LoginPage = ({ navigation }) => {
   return (
     <View>
       <TextInput
-        placeholder="E-mail" 
+        style={globalStyle.textInput}
+        label="E-mail"
+        value={email}
+        mode="outlined"
         onChangeText={setEmail}
         ref={emailInputRef} />
-      <TextInput 
-        placeholder="Password"
+      <TextInput
+        style={globalStyle.textInput}
+        label="Password"
+        value={password}
+        mode="outlined"
         secureTextEntry={true}
         onChangeText={setPassword}
         ref={passwordInputRef} />
       <Button
-        title="로그인"
+        style={{alignSelf: 'center', width: '100%'}}
+        mode="contained"
         disabled={!isFormValid}
-        onPress={() => signIn(email, password, navigation)} />
+        onPress={() => signIn(email, password, navigation)} >
+        로그인
+      </Button>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.underButtons]}

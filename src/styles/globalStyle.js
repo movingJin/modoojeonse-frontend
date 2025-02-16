@@ -114,4 +114,14 @@ export default StyleSheet.create({
       textAlign:'center',
       paddingBottom:40
     },
+    formContainer: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    formArea: {
+      width: '100%',
+      flex: 1
+    },
   });

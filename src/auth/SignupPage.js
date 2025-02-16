@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Text, TextInput, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { sendAuthCode, signUp } from '../utils/tokenUtils';
+import { Text, TextInput, Button } from 'react-native-paper';
+import globalStyle from "../styles/globalStyle"
 
 const SignupPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -52,9 +54,9 @@ const SignupPage = ({ navigation }) => {
     } else if (password.length < 8) { 
         errors.message = '비밀번호는 최소 8자 이상 입력해주세요.'; 
     }
-    if (!phoneNumber) { 
-      errors.message = '핸드폰번호는 필수 입력입니다.'; 
-    }
+    // if (!phoneNumber) { 
+    //   errors.message = '핸드폰번호는 필수 입력입니다.'; 
+    // }
     if (!userName) { 
       errors.message = '닉네임은 필수 입력입니다.'; 
     }
@@ -77,12 +79,14 @@ const SignupPage = ({ navigation }) => {
     //   <TextInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} />
     //   <Button title="Login" onPress={() => signIn(email, password, navigation)} />
     // </View>
-    <View style={styles.container}>
-      <View style={styles.formArea}>
+    <View style={globalStyle.formContainer}>
+      <View style={globalStyle.formArea}>
         <View style={styles.formEmail}>
           <TextInput
-            style={{width: 290}}
-            placeholder={'E-Mail'}
+            style={[globalStyle.textInput, {width: '80%'}]}
+            label="E-Mail"
+            value={email}
+            mode="outlined"
             onChangeText={setEmail}
             ref={emailInputRef}
             returnKeyType="next"
@@ -91,10 +95,17 @@ const SignupPage = ({ navigation }) => {
             }
             blurOnSubmit={false}
           />
-          <Button style={styles.sendAuthCode} title="인증코드 전송" onPress={() => sendAuthCode(email)} />
+          <Button
+            style={{alignSelf: 'center', width: '20%'}}
+            mode="contained" onPress={() => sendAuthCode(email)}>
+            인증코드 전송
+          </Button>
         </View>
         <TextInput
-          placeholder={'보안코드를 입력하세요'}
+          style={globalStyle.textInput}
+          label="보안코드를 입력하세요"
+          value={authCode}
+          mode="outlined"
           onChangeText={setAuthCode}
           ref={codeInputRef}
           returnKeyType="next"
@@ -104,7 +115,10 @@ const SignupPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
-          placeholder={'닉네임'}
+          style={globalStyle.textInput}
+          label="닉네임"
+          value={userName}
+          mode="outlined"
           onChangeText={setUserName}
           ref={nameInputRef}
           returnKeyType="next"
@@ -114,8 +128,11 @@ const SignupPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
-          placeholder={'휴대전화번호'}
+          editable={false} selectTextOnFocus={false} //임시로 휴대전화 disable
+          style={[globalStyle.textInput, {backgroundColor: 'gray'}]}
+          label="휴대전화번호"
           value={phoneMask}
+          mode="outlined"
           onChangeText={onPhoneChanged}
           keyboardType="number-pad"
           ref={phoneInputRef}
@@ -126,8 +143,11 @@ const SignupPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
+          style={globalStyle.textInput}
+          label="비밀번호(8자 이상)"
+          value={password}
+          mode="outlined"
           secureTextEntry={true}
-          placeholder={'비밀번호(8자 이상)'}
           onChangeText={setPassword}
           ref={passwordInputRef}
           returnKeyType="next"
@@ -137,8 +157,11 @@ const SignupPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
+          style={globalStyle.textInput}
+          label="비밀번호 확인"
+          value={passwordChk}
+          mode="outlined"
           secureTextEntry={true}
-          placeholder={'비밀번호 확인'}
           onChangeText={setPasswordChk}
           ref={passwordChkInputRef}
           returnKeyType="next"
@@ -147,22 +170,22 @@ const SignupPage = ({ navigation }) => {
           }
           blurOnSubmit={false}
         />
+        <View style={{flex: 0.5, justifyContent: 'center'}}>
+        {!isFormValid ? (
+          <Text style={styles.TextValidation}>
+            {errors.message}
+          </Text>
+        ) : null}
+        </View>
+        <Button
+          style={{alignSelf: 'center', width: '20%'}}
+          mode="contained"
+          disabled={!isFormValid}
+          onPress={() => signUp(email, userName, phoneNumber, authCode, password, navigation)}
+        >
+          회원가입
+        </Button>
       </View>
-
-      <View style={{flex: 0.5, justifyContent: 'center'}}>
-      {!isFormValid ? (
-        <Text style={styles.TextValidation}>
-          {errors.message}
-        </Text>
-      ) : null}
-      </View>
-      <Button
-        style={{color: 'white', fontSize: wp('4%')}}
-        title="회원가입"
-        disabled={!isFormValid}
-        onPress={() => signUp(email, userName, phoneNumber, authCode, password, navigation)}
-      >
-      </Button>
     </View>
   );
 };

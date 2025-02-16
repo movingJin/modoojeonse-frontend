@@ -9,7 +9,7 @@ import globalStyle from "../styles/globalStyle"
 
 const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
   const [title, setTitle] = useState(selectedReview ? selectedReview.title: '');
-  const [body, setBody] = useState(selectedReview ? selectedReview.body: '');
+  const [body, setBody] = useState(selectedReview ? selectedReview.body: '장점: \n\n단점: \n\n한줄평: ');
   const [addressDetail, setAddressDetail] = useState(selectedReview ? selectedReview.addressDetail: '');
   const [contractType, setContractType] = useState(selectedReview ? selectedReview.contractType: 'Monthly');
   const [isReturnDelayed, setIsReturnDelayed] = useState(selectedReview ? selectedReview.isReturnDelayed: false);
@@ -142,8 +142,8 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.formArea}>
+    <View style={globalStyle.formContainer}>
+      <View style={globalStyle.formArea}>
         <Text style={globalStyle.itemHeader}>후기 등록</Text>
         <ScrollView>
         <TextInput
@@ -159,7 +159,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           value={body}
           mode="outlined"
           multiline
-          numberOfLines={5}
+          numberOfLines={6}
           onChangeText={setBody}
           ref={bodyInputRef}
           style={globalStyle.textInput}
@@ -279,16 +279,6 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  formArea: {
-    width: '100%',
-    flex: 1
-  },
   formAddress: {
     flexDirection: 'row',
   },
