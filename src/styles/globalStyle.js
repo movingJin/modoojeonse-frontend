@@ -81,6 +81,11 @@ export default StyleSheet.create({
         marginVertical: 8,
         marginHorizontal: 4
     },
+    commonButton:{
+      alignSelf: 'center',
+      marginVertical: 8,
+      marginHorizontal: 4
+    },
     button:{
         bottom: 16,
         right: 16,

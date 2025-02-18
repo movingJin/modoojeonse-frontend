@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Text, TextInput, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { sendAuthCode, findPwd } from '../utils/tokenUtils';
+import { Text, TextInput, Button } from 'react-native-paper';
+import globalStyle from "../styles/globalStyle"
 
 const FindPwdPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -54,8 +56,10 @@ const FindPwdPage = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.formArea}>
         <TextInput
-          style={{width: 290}}
-          placeholder={'E-Mail'}
+          style={globalStyle.textInput}
+          label="E-Mail"
+          value={email}
+          mode="outlined"
           onChangeText={setEmail}
           ref={emailInputRef}
           returnKeyType="next"
@@ -66,8 +70,10 @@ const FindPwdPage = ({ navigation }) => {
         />
         <View style={styles.formPhone}>
           <TextInput
-            placeholder={'휴대전화번호'}
+            style={globalStyle.textInput}
+            label="휴대전화번호"
             value={phoneMask}
+            mode="outlined"
             onChangeText={onPhoneChanged}
             keyboardType="number-pad"
             ref={phoneInputRef}
@@ -89,22 +95,22 @@ const FindPwdPage = ({ navigation }) => {
           }
           blurOnSubmit={false}
         /> */}
+        <View style={{flex: 0.5, justifyContent: 'center'}}>
+        {!isFormValid ? (
+          <Text style={styles.TextValidation}>
+            {errors.message}
+          </Text>
+        ) : null}
+        </View>
+        <Button
+          style={[globalStyle.commonButton, {width: '100%'}]}
+          mode="contained"
+          disabled={!isFormValid}
+          onPress={() => findPwd(email, phoneNumber, authCode, navigation)}
+        >
+          임시비밀번호 발송
+        </Button>
       </View>
-
-      <View style={{flex: 0.5, justifyContent: 'center'}}>
-      {!isFormValid ? (
-        <Text style={styles.TextValidation}>
-          {errors.message}
-        </Text>
-      ) : null}
-      </View>
-      <Button
-        style={{color: 'white', fontSize: wp('4%')}}
-        title="임시비밀번호 발송"
-        disabled={!isFormValid}
-        onPress={() => findPwd(email, phoneNumber, authCode, navigation)}
-      >
-      </Button>
     </View>
   );
 };

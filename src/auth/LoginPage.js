@@ -60,23 +60,27 @@ const LoginPage = ({ navigation }) => {
         onChangeText={setPassword}
         ref={passwordInputRef} />
       <Button
-        style={{alignSelf: 'center', width: '100%'}}
+        style={[globalStyle.commonButton, {width: '100%'}]}
         mode="contained"
         disabled={!isFormValid}
         onPress={() => signIn(email, password, navigation)} >
         로그인
       </Button>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.underButtons]}
-          onPress={() => navigation.navigate('FindEmail')}>
-          <Text style={styles.buttonText}>Email(ID)찾기</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.underButtons]}
-          onPress={() => navigation.navigate('FindPwd')}>
-          <Text style={styles.buttonText}>비밀번호찾기</Text>
-        </TouchableOpacity>
+        <Button
+          style={[globalStyle.commonButton, {width: '50%'}]}
+          mode="contained"
+          color="#cb9afd"
+          onPress={() => navigation.navigate('FindEmail')} >
+          Email(ID)찾기
+        </Button>
+        <Button
+          style={[globalStyle.commonButton, {width: '50%'}]}
+          mode="contained"
+          color="#cb9afd"
+          onPress={() => navigation.navigate('FindPwd')} >
+          비밀번호찾기
+        </Button>
       </View>
     </View>
   );
@@ -88,20 +92,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     width: wp('100%')
-  },
-  underButtons: {
-    width: wp('50%'),
-    height: hp('5%'),
-    paddingLeft: wp('2%'),
-    margin: 1,
-    backgroundColor: 'rgba(52, 52, 52, 0)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 0.5,
-    borderColor: '#ccc',
-  },
-  buttonText: {
-    color: 'black'
   }
 })
 

@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Text, TextInput, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { modifyPwd } from '../utils/tokenUtils';
+import { Text, TextInput, Button } from 'react-native-paper';
+import globalStyle from "../styles/globalStyle"
 
 const ModifyPwdPage = ({ navigation }) => {
   const [oldPassword, setOldPassword] = useState('');
@@ -53,8 +55,11 @@ const ModifyPwdPage = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.formArea}>
         <TextInput
+          style={globalStyle.textInput}
+          label="변경전 비밀번호"
+          value={oldPassword}
+          mode="outlined"
           secureTextEntry={true}
-          placeholder={'변경전 비밀번호'}
           onChangeText={setOldPassword}
           ref={oldPasswordInputRef}
           returnKeyType="next"
@@ -64,8 +69,11 @@ const ModifyPwdPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
+          style={globalStyle.textInput}
+          label="새로운 비밀번호(8자 이상)"
+          value={newPassword}
+          mode="outlined"
           secureTextEntry={true}
-          placeholder={'새로운 비밀번호(8자 이상)'}
           onChangeText={setNewPassword}
           ref={newPasswordInputRef}
           returnKeyType="next"
@@ -75,29 +83,32 @@ const ModifyPwdPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
+          style={globalStyle.textInput}
+          label="새로운 비밀번호 확인"
+          value={newPasswordChk}
+          mode="outlined"
           secureTextEntry={true}
-          placeholder={'새로운 비밀번호 확인'}
           onChangeText={setNewPasswordChk}
           ref={newPasswordChkInputRef}
           returnKeyType="next"
           blurOnSubmit={false}
         />
+        <View style={{flex: 0.5, justifyContent: 'center'}}>
+        {!isFormValid ? (
+          <Text style={styles.TextValidation}>
+            {errors.message}
+          </Text>
+        ) : null}
+        </View>
+        <Button
+          style={[globalStyle.commonButton, {width: '100%'}]}
+          mode="contained"
+          disabled={!isFormValid}
+          onPress={() => modifyPwd(oldPassword, newPassword, navigation)}
+        >
+          비밀번호 변경
+        </Button>
       </View>
-
-      <View style={{flex: 0.5, justifyContent: 'center'}}>
-      {!isFormValid ? (
-        <Text style={styles.TextValidation}>
-          {errors.message}
-        </Text>
-      ) : null}
-      </View>
-      <Button
-        style={{color: 'white', fontSize: wp('4%')}}
-        title="비밀번호 변경"
-        disabled={!isFormValid}
-        onPress={() => modifyPwd(oldPassword, newPassword, navigation)}
-      >
-      </Button>
     </View>
   );
 };

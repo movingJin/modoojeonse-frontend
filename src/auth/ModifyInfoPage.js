@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Text, TextInput, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { modifyInfo } from '../utils/tokenUtils';
 import authStore from '../utils/authStore';
+import { Text, TextInput, Button } from 'react-native-paper';
+import globalStyle from "../styles/globalStyle"
 
 const ModifyInfoPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -64,15 +66,18 @@ const ModifyInfoPage = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.formArea}>
         <TextInput
-          style={{width: 290}}
-          placeholder={'E-Mail'}
+          style={globalStyle.textInput}
+          label="E-Mail"
           value={email}
+          mode="outlined"
           ref={emailInputRef}
           editable = {false}
         />
         <TextInput
-          placeholder={'닉네임'}
+          style={globalStyle.textInput}
+          label="닉네임"
           value={userName}
+          mode="outlined"
           onChangeText={setUserName}
           ref={nameInputRef}
           returnKeyType="next"
@@ -82,8 +87,10 @@ const ModifyInfoPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
-          placeholder={'휴대전화번호'}
+          style={[globalStyle.textInput]}
+          label="휴대전화번호"
           value={phoneMask}
+          mode="outlined"
           onChangeText={onPhoneChanged}
           keyboardType="number-pad"
           ref={phoneInputRef}
@@ -94,24 +101,27 @@ const ModifyInfoPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <Button
-          title="비밀번호 재설정"
-          onPress={() => navigation.navigate('ModifyPwd')} />
+          style={[globalStyle.commonButton, {width: '100%'}]}
+          mode="contained"
+          onPress={() => navigation.navigate('ModifyPwd')} >
+          비밀번호 재설정
+        </Button>
+        <View style={{flex: 0.5, justifyContent: 'center'}}>
+        {!isFormValid ? (
+          <Text style={styles.TextValidation}>
+            {errors.message}
+          </Text>
+        ) : null}
+        </View>
+        <Button
+          style={[globalStyle.commonButton, {width: '100%'}]}
+          mode="contained"
+          disabled={!isFormValid}
+          onPress={() => modifyInfo(userName, phoneNumber, navigation)}
+        >
+          수정완료
+        </Button>
       </View>
-
-      <View style={{flex: 0.5, justifyContent: 'center'}}>
-      {!isFormValid ? (
-        <Text style={styles.TextValidation}>
-          {errors.message}
-        </Text>
-      ) : null}
-      </View>
-      <Button
-        style={{color: 'white', fontSize: wp('4%')}}
-        title="수정완료"
-        disabled={!isFormValid}
-        onPress={() => modifyInfo(userName, phoneNumber, navigation)}
-      >
-      </Button>
     </View>
   );
 };

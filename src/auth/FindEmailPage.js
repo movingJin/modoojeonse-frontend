@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Text, TextInput, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { sendAuthCode, findEmail } from '../utils/tokenUtils';
+import { Text, TextInput, Button } from 'react-native-paper';
+import globalStyle from "../styles/globalStyle"
 
 const FindEmailPage = ({ navigation }) => {
   const [phoneNumber, setphoneNumber] = useState('');
@@ -48,8 +50,10 @@ const FindEmailPage = ({ navigation }) => {
       <View style={styles.formArea}>
         <View style={styles.formPhone}>
           <TextInput
-            placeholder={'휴대전화번호'}
+            style={globalStyle.textInput}
+            label="휴대전화번호"
             value={phoneMask}
+            mode="outlined"
             onChangeText={onPhoneChanged}
             keyboardType="number-pad"
             ref={phoneInputRef}
@@ -71,22 +75,22 @@ const FindEmailPage = ({ navigation }) => {
           }
           blurOnSubmit={false}
         /> */}
+        <View style={{flex: 0.5, justifyContent: 'center'}}>
+        {!isFormValid ? (
+          <Text style={styles.TextValidation}>
+            {errors.message}
+          </Text>
+        ) : null}
+        </View>
+        <Button
+          style={[globalStyle.commonButton, {width: '100%'}]}
+          mode="contained"
+          disabled={!isFormValid}
+          onPress={() => findEmail(phoneNumber, authCode, navigation)}
+        >
+          Email(ID) 찾기
+        </Button>
       </View>
-
-      <View style={{flex: 0.5, justifyContent: 'center'}}>
-      {!isFormValid ? (
-        <Text style={styles.TextValidation}>
-          {errors.message}
-        </Text>
-      ) : null}
-      </View>
-      <Button
-        style={{color: 'white', fontSize: wp('4%')}}
-        title="Email(ID) 찾기"
-        disabled={!isFormValid}
-        onPress={() => findEmail(phoneNumber, authCode, navigation)}
-      >
-      </Button>
     </View>
   );
 };

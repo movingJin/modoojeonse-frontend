@@ -54,9 +54,9 @@ const SignupPage = ({ navigation }) => {
     } else if (password.length < 8) { 
         errors.message = '비밀번호는 최소 8자 이상 입력해주세요.'; 
     }
-    // if (!phoneNumber) { 
-    //   errors.message = '핸드폰번호는 필수 입력입니다.'; 
-    // }
+    if (!phoneNumber) { 
+      errors.message = '핸드폰번호는 필수 입력입니다.'; 
+    }
     if (!userName) { 
       errors.message = '닉네임은 필수 입력입니다.'; 
     }
@@ -74,11 +74,6 @@ const SignupPage = ({ navigation }) => {
     setIsFormValid(Object.keys(errors).length === 0); 
   };
   return (
-    // <View>
-    //   <TextInput placeholder="E-mail" onChangeText={setEmail} />
-    //   <TextInput placeholder="Password" secureTextEntry={true} onChangeText={setPassword} />
-    //   <Button title="Login" onPress={() => signIn(email, password, navigation)} />
-    // </View>
     <View style={globalStyle.formContainer}>
       <View style={globalStyle.formArea}>
         <View style={styles.formEmail}>
@@ -128,8 +123,7 @@ const SignupPage = ({ navigation }) => {
           blurOnSubmit={false}
         />
         <TextInput
-          editable={false} selectTextOnFocus={false} //임시로 휴대전화 disable
-          style={[globalStyle.textInput, {backgroundColor: 'gray'}]}
+          style={[globalStyle.textInput]}
           label="휴대전화번호"
           value={phoneMask}
           mode="outlined"
