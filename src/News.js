@@ -1,5 +1,6 @@
 import React, {Component, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, ScrollView, Platform} from 'react-native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { FlashList } from "@shopify/flash-list";
 import axios from "axios";
 import Config from "react-native-config";
@@ -62,8 +63,8 @@ export default class News extends Component {
       <TouchableOpacity style={style.listView} onPress={() => this.toggleModal(item)}>
           {/* <Image source={item.img} style={style.listImg}></Image> */}
           <View style={{flexDirection:'column'}}>
-              <Text style={style.listTitle}>{item.title}</Text>
-              <Text style={style.listBody}>{item.summary}</Text>
+              <Text style={style.listTitle} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
+              <Text style={style.listBody} numberOfLines={2} ellipsizeMode="tail" >{item.summary}</Text>
               <View style={style.footer}>
                 <Text style={style.itemPublisher}>{item.publisher}</Text>
                 <Text style={style.itemTimestamp}>{item.timestamp}</Text>
@@ -105,7 +106,7 @@ const style= StyleSheet.create({
   root:{
     flexGrow:1,
     padding:16,
-    height: (Platform.OS === 'web')? 800: undefined,
+    height: (Platform.OS === 'web')? hp('80%'): undefined,
   },
   titleText:{
     fontSize:24,
@@ -119,22 +120,25 @@ const style= StyleSheet.create({
     borderRadius:4,
     padding:8,
     marginBottom:12,
-    height:160
+    height: 160,
+    width: (Platform.OS === 'web')? wp('96%'): undefined
   },
   listImg:{
     width:120,
-    height:100,
+    height: 100,
     resizeMode:'cover',
     marginRight:8
   },
   listTitle:{
     fontSize:18,
     fontWeight:'bold',
-    height:40
+    height: 40,
+    width: (Platform.OS === 'web')? wp('95%'): undefined
   },
   listBody:{
     fontSize:16,
-    height:80
+    height: 80,
+    width: (Platform.OS === 'web')? wp('95%'): undefined
   },
   itemPublisher:{
     fontSize:14,
