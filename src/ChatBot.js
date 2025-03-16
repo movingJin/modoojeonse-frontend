@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow:1,
     padding:16,
-    height: (Platform.OS === 'web')? 800: undefined,
+    flex: 1,
   },
   message: {
     padding: 10,
