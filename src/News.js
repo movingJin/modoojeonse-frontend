@@ -121,7 +121,7 @@ const style= StyleSheet.create({
     padding:8,
     marginBottom:12,
     height: 160,
-    width: (Platform.OS === 'web')? wp('96%'): undefined
+    width: (Platform.OS === 'web')? '96%': undefined
   },
   listImg:{
     width:120,
@@ -133,12 +133,12 @@ const style= StyleSheet.create({
     fontSize:18,
     fontWeight:'bold',
     height: 40,
-    width: (Platform.OS === 'web')? wp('95%'): undefined
+    width: (Platform.OS === 'web')? wp('94%'): undefined
   },
   listBody:{
     fontSize:16,
     height: 80,
-    width: (Platform.OS === 'web')? wp('95%'): undefined
+    width: (Platform.OS === 'web')? wp('94%'): undefined
   },
   itemPublisher:{
     fontSize:14,

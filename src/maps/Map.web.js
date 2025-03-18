@@ -278,7 +278,7 @@ const Map = () => {
         key={mapKey} // Force re-render by changing the key
         center={[center.latitude, center.longitude]}
         zoom={13}
-        style={{ height: '80vh', width: '100%' }}
+        style={{ height: '100%', width: '100%' }}
         >
         <MapRefresher />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
