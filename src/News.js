@@ -1,5 +1,5 @@
-import React, {Component, useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, ScrollView, Platform} from 'react-native';
+import React, {Component, createRef} from 'react';
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Modal, ScrollView, Platform} from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { FlashList } from "@shopify/flash-list";
 import axios from "axios";
@@ -13,9 +13,12 @@ export default class News extends Component {
     super(props);
     this.state={
       datas: [],
+      filteredData: [], // Stores filtered results
+      searchQuery: '',
       isModalVisible: false,
       selectedItem: null
     };
+    this.flashListRef = createRef();
   }
 
   componentDidMount(){
@@ -23,7 +26,25 @@ export default class News extends Component {
       this.setState({datas: response.data});
     });
   }
-  
+
+  // Filter function
+  handleSearch = (event) => {
+    if(event.nativeEvent.text === ''){
+      axios.get(`${URL}/news/search-native`, {}).then((response)=>{
+        this.setState({datas: response.data});
+      });
+    } else {
+      const param = {"body": event.nativeEvent.text.toLowerCase()};
+      axios.get(`${URL}/news/search-native`, {params: param}).then((response)=>{
+        this.setState({datas: response.data});
+      });
+    }
+    if (this.flashListRef.current) {
+      this.flashListRef.current.scrollToIndex({ animated: false, index: 0 });
+    }
+    this.setState({ searchQuery: event.nativeEvent.text});
+  };
+
   toggleModal = (item) => {
     this.setState({
       isModalVisible: !this.state.isModalVisible
@@ -34,6 +55,9 @@ export default class News extends Component {
   appendData = () => {
     if(this.state.datas.length > 0){
       const param = {"searchAfter": this.state.datas[this.state.datas.length-1].sort};
+      if(this.state.searchQuery.trim() !== ''){
+        param["body"] = this.state.searchQuery;
+      }
       axios.get(`${URL}/news/search-native`, {params: param}).then((response)=>{
         const d = [...this.state.datas, ...response.data];
         this.setState({datas: d});
@@ -45,8 +69,15 @@ export default class News extends Component {
   render() {
     return (
       <View style={style.root}>
-        <Text style={style.titleText}>{this.props.route.params.title}</Text>
+        {/* 🔹 Search Input Field */}
+        <TextInput
+          style={style.searchInput}
+          placeholder="내용검색"
+          //value={this.state.searchQuery}
+          onSubmitEditing={this.handleSearch}
+        />
         <FlashList
+          ref={this.flashListRef}
           data={this.state.datas}
           renderItem={this.renderItem}
           onEndReachedThreshold={0.5}
@@ -108,11 +139,13 @@ const style= StyleSheet.create({
     padding:16,
     height: (Platform.OS === 'web')? hp('80%'): undefined,
   },
-  titleText:{
-    fontSize:24,
-    fontWeight:'bold',
-    textAlign:'center',
-    paddingBottom:16
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+    fontSize: 16,
   },
   listView:{
     flexDirection:'row',
