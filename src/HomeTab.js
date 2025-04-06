@@ -7,11 +7,15 @@ import Map from './maps/Map'
 import News from './News'
 import ChatBot from './ChatBot';
 
-const Tab = (Platform.OS === 'web') ? createMaterialTopTabNavigator(): createBottomTabNavigator();
+const isWeb = Platform.OS === 'web';
+const Tab = isWeb ? createMaterialTopTabNavigator() : createBottomTabNavigator();
 
 const HomeTab = () => {
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Navigator screenOptions={{ 
+            headerShown: false,
+            ...(isWeb && { swipeEnabled: false }), // Only apply on web
+        }}>
             <Tab.Screen
                 name='Map'
                 component={Map}
