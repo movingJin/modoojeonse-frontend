@@ -12,6 +12,7 @@ import AuthStackNavigator from './src/auth/AuthStackNavigator';
 import {View} from 'react-native';
 import authStore from './src/utils/authStore';
 import { signOut } from './src/utils/tokenUtils';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 class App extends Component {
 
@@ -62,9 +63,11 @@ class App extends Component {
     return (
       <>
         <View style={{ flex: 1 }}>
-          <NavigationContainer>
-              <AuthStackNavigator />
-          </NavigationContainer>
+          <PaperProvider>
+            <NavigationContainer>
+                <AuthStackNavigator />
+            </NavigationContainer>
+          </PaperProvider>
         </View>
       </>
     );

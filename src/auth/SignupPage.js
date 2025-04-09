@@ -4,17 +4,23 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { sendAuthCode, signUp } from '../utils/tokenUtils';
 import { Text, TextInput, Button } from 'react-native-paper';
 import globalStyle from "../styles/globalStyle"
+import { Menu } from 'react-native-paper';
+
+const emailDomains = ['gmail.com', 'naver.com', 'daum.net', 'hanmail.net', 'yahoo.com', '직접입력'];
 
 const SignupPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
+  const [emailId, setEmailId] = useState('');
+  const [emailDomain, setEmailDomain] = useState('');
+  const [menuVisible, setMenuVisible] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordChk, setPasswordChk] = useState('');
   const [userName, setUserName] = useState('');
   const [phoneNumber, setphoneNumber] = useState('');
   const [phoneMask, setphoneMask] = useState('');
   const [authCode, setAuthCode] = useState('');
-  const [errors, setErrors] = useState({}); 
-  const [isFormValid, setIsFormValid] = useState(false); 
+  const [errors, setErrors] = useState({});
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
@@ -27,7 +33,8 @@ const SignupPage = ({ navigation }) => {
   const passwordChkInputRef = useRef();
   const nameInputRef = useRef();
   const phoneInputRef = useRef();
-
+  const anchorRef = useRef();
+  
   useEffect(() => {
     emailInputRef.current.focus();
   }, [])
@@ -35,6 +42,14 @@ const SignupPage = ({ navigation }) => {
   useEffect(() => { 
     validateForm(); 
   }, [email, authCode, userName, phoneNumber, password, passwordChk]);
+
+  useEffect(() => {
+    if(emailDomain === "직접입력"){
+      setEmail(emailId);
+    }else{
+      setEmail(emailDomain ? `${emailId}@${emailDomain}` : '');
+    }
+  }, [emailId, emailDomain]);
 
   function onPhoneChanged(value) {
     value = value.replace(/[^0-9]/g, '')
@@ -44,8 +59,9 @@ const SignupPage = ({ navigation }) => {
     setphoneMask(value);
   };
 
-  function validateForm() { 
-    const errors = {}; 
+  function validateForm() {
+    const errors = {};
+
     if (password !== passwordChk){
       errors.message = '비밀번호가 일치하지 않습니다.'; 
     }
@@ -78,18 +94,45 @@ const SignupPage = ({ navigation }) => {
       <View style={globalStyle.formArea}>
         <View style={styles.formEmail}>
           <TextInput
-            style={[globalStyle.textInput, {width: '80%'}]}
+            style={[globalStyle.textInput, {width: '60%'}]}
             label="E-Mail"
-            value={email}
+            value={emailId}
             mode="outlined"
-            onChangeText={setEmail}
+            onChangeText={setEmailId}
             ref={emailInputRef}
             returnKeyType="next"
             onSubmitEditing={() =>
-              codeInputRef.current && codeInputRef.current.focus()
+              anchorRef.current && anchorRef.current.focus()
             }
             blurOnSubmit={false}
           />
+          <Text style={{ alignSelf: 'center', marginHorizontal: 4 }}>@</Text>
+          <Menu
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            anchor={
+              <TouchableOpacity
+                onPress={() => setMenuVisible(true)}
+                ref={anchorRef}
+                style={[{marginTop: 22, marginHorizontal: 4},  styles.domainBox]}
+              >
+                <Text style={{ marginTop: 14, marginLeft: 8}}>
+                  {emailDomain || "도메인 선택"}
+                </Text>
+              </TouchableOpacity>
+            }
+          >
+            {emailDomains.map((domain) => (
+              <Menu.Item
+                key={domain}
+                onPress={() => {
+                  setEmailDomain(domain);
+                  setMenuVisible(false);
+                }}
+                title={domain}
+              />
+            ))}
+          </Menu>
           <Button
             style={{alignSelf: 'center', width: '20%'}}
             mode="contained" onPress={() => sendAuthCode(email)}>
@@ -195,6 +238,14 @@ const styles = StyleSheet.create({
   formEmail: {
     flexDirection: 'row',
     width: wp('100%')
+  },
+  domainBox: {
+    borderWidth: 1,
+    borderColor: '#C4C4C4',
+    borderRadius: 4,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    width: wp('10%'),
   },
   sendAuthCode: {
     width: wp('10%'),
