@@ -135,7 +135,8 @@ const SignupPage = ({ navigation }) => {
           </Menu>
           <Button
             style={{alignSelf: 'center', width: '20%'}}
-            mode="contained" onPress={() => sendAuthCode(email)}>
+            mode="contained" onPress={() => sendAuthCode(email)}
+            disabled={(email === '') ? true: false}>
             인증코드 전송
           </Button>
         </View>
