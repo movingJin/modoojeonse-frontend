@@ -12,6 +12,7 @@ const SignupPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [emailId, setEmailId] = useState('');
   const [emailDomain, setEmailDomain] = useState('');
+  const [isEmailValidate, setIsEmailValidate] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordChk, setPasswordChk] = useState('');
@@ -80,9 +81,14 @@ const SignupPage = ({ navigation }) => {
       errors.message = '인증코드는 필수 입력입니다. 입력하신 E-Mail로 인증코드를 발송해주세요.'; 
     }
     if (!email) {
-        errors.message = 'E-Mail은 필수 입력입니다.'; 
-    } else if (!/\S+@\S+\.\S+/.test(email)) { 
-        errors.message = 'E-Mail 형식이 아닙니다.'; 
+      errors.message = 'E-Mail은 필수 입력입니다.';
+      setIsEmailValidate(false);
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.message = 'E-Mail 형식이 아닙니다.';
+      setIsEmailValidate(false);
+    }else{
+      //유효한 email
+      setIsEmailValidate(true);
     }
 
     // Set the errors and update form validity 
@@ -136,7 +142,7 @@ const SignupPage = ({ navigation }) => {
           <Button
             style={{alignSelf: 'center', width: '20%'}}
             mode="contained" onPress={() => sendAuthCode(email)}
-            disabled={(email === '') ? true: false}>
+            disabled={!isEmailValidate}>
             인증코드 전송
           </Button>
         </View>
