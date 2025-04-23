@@ -11,10 +11,11 @@ import RegisterPin from './RegisterPin'
 import { FAB } from 'react-native-paper';
 import axios from "axios";
 import authStore from '../utils/authStore';
-import { verifyTokens } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle";
+import { verifyTokens } from '../utils/tokenUtils';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Loader } from '@googlemaps/js-api-loader';
+import CustomAutocomplete from './CustomAutocomplete';
+import {APIProvider } from '@vis.gl/react-google-maps';
 
 const URL = process.env.API_SERVER_URL;
 
@@ -66,31 +67,6 @@ const Map = () => {
   const lastFetchCenter = useRef(null);
 
   useEffect(()=>{
-    const loader = new Loader({
-      apiKey: process.env.REACT_APP_GOOGLE_MAP_API,
-      libraries: ['places'], // 필요한 라이브러리 명시
-    });
-  
-    loader.load().then(() => {
-      if (!autocompleteRef.current) return;
-  
-      const autocomplete = new window.google.maps.places.Autocomplete(autocompleteRef.current);
-      autocomplete.setFields(['geometry', 'name']);
-  
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        if (place.geometry && place.geometry.location) {
-          const location = place.geometry.location;
-          setCenter({
-            latitude: location.lat(),
-            longitude: location.lng(),
-          });
-        }
-      });
-    }).catch((e) => {
-      console.error('Google Maps API 로딩 실패:', e);
-    });
-  
     const timer = setTimeout(() => {
       verifyTokens(setIsAuthenticated);
     }, 1000);
@@ -108,8 +84,10 @@ const Map = () => {
     }, [])
   );
 
-  const searchFirstSuggestion = async () => {
-    const input = autocompleteRef.current.value.trim();
+  const searchFirstSuggestion = async (inputText) => {
+    const input = inputText?.trim();
+    if (!input) return;
+
     if (window.google && window.google.maps.places) {
       try {
         const service = new google.maps.places.AutocompleteService();
@@ -260,17 +238,14 @@ const Map = () => {
   }
 
   return (
+    <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAP_API} version={'beta'}>
     <View style={{ flex: 1 }}>
-      <input
-        ref={autocompleteRef}
-        type="text"
-        placeholder="장소, 주소 검색"
-        onKeyDown={handleKeyPress}
-        style={{
-          padding: '10px',
-          width: '100%',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
+      <CustomAutocomplete
+        onPlaceSelect={(place) => {
+          setCenter({
+            latitude: place.location.lat(),
+            longitude: place.location.lng(),
+          });
         }}
       />
 
@@ -306,6 +281,7 @@ const Map = () => {
       {isReviewListVisible && popupList()}
       {isRegisterVisible && popupRegisterPin()}
     </View>
+    </APIProvider>
   );
 };
 
