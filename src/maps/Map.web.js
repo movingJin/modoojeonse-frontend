@@ -84,63 +84,6 @@ const Map = () => {
     }, [])
   );
 
-  const searchFirstSuggestion = async (inputText) => {
-    const input = inputText?.trim();
-    if (!input) return;
-
-    if (window.google && window.google.maps.places) {
-      try {
-        const service = new google.maps.places.AutocompleteService();
-        const predictions = await new Promise((resolve, reject) => {
-          service.getPlacePredictions({ input }, (res, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK && res.length > 0) {
-              resolve(res);
-            } else {
-              reject('No suggestions found or autocomplete service failed.');
-            }
-          });
-        });
-  
-        // Get details of the first suggestion
-        const firstPrediction = predictions[0];
-        if (firstPrediction) {
-          const placesService = new google.maps.places.PlacesService(document.createElement('div'));
-          
-          // Fetch place details using the `place_id`
-          const placeDetails = await new Promise((resolve, reject) => {
-            placesService.getDetails({ placeId: firstPrediction.place_id }, (res, status) => {
-              if (status === google.maps.places.PlacesServiceStatus.OK) {
-                resolve(res);
-              } else {
-                reject('Place details fetch failed.');
-              }
-            });
-          });
-  
-          const location = placeDetails.geometry?.location;
-          if (location) {
-            setCenter({
-              latitude: location.lat(),
-              longitude: location.lng(),
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching first suggestion:', error);
-        alert('No valid locations found for the entered text.');
-      }
-    } else {
-      console.error('Google Maps Places library is not available.');
-    }
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent form submission or default behavior
-      searchFirstSuggestion(); // Call the search function
-    }
-  };
-
   const resetAuthState = () => {
     const accessToken = authStore.getState().accessToken;
     if (accessToken === null) {
