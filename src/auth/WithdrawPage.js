@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Text, TextInput, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TextInput, Button } from 'react-native-paper';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { withdraw } from '../utils/tokenUtils';
+import globalStyle from "../styles/globalStyle"
 
 const WithdrawPage = ({ navigation }) => {
   const [password, setPassword] = useState('');
@@ -38,8 +40,11 @@ const WithdrawPage = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.formArea}>
         <TextInput
+          style={globalStyle.textInput}
+          label="비밀번호 입력"
+          value={password}
+          mode="outlined"
           secureTextEntry={true}
-          placeholder={'비밀번호 입력'}
           onChangeText={setPassword}
           ref={passwordInputRef}
           returnKeyType="next"
@@ -55,11 +60,11 @@ const WithdrawPage = ({ navigation }) => {
       ) : null}
       </View>
       <Button
-        style={{color: 'white', fontSize: wp('4%')}}
-        title="회원탈퇴"
+        style={{alignSelf: 'center', width: '20%'}}
+        mode="contained"
         disabled={!isFormValid}
         onPress={() => withdraw(password, navigation)}
-      >
+      > 회원탈퇴
       </Button>
     </View>
   );
@@ -73,27 +78,11 @@ const styles = StyleSheet.create({
   formArea: {
     flex: 1
   },
-  formEmail: {
-    flexDirection: 'row',
-    width: wp('100%')
-  },
-  sendAuthCode: {
-    width: wp('10%'),
-    paddingLeft: wp('2%')
-  },
   TextValidation: {
     fontSize:24,
     fontWeight:'bold',
     textAlign:'center',
     paddingBottom:16
-  },
-  wrapButton: {
-    width: wp('100%'),
-    height: hp('8%'),
-    paddingLeft: wp('2%'),
-    justifyContent: 'center',
-    borderBottomWidth: 0.5,
-    borderColor: '#ccc',
   }
 })
 
