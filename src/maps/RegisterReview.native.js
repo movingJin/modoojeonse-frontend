@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 import { saveReview, editReview } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle"
 
-const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
+const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview, onDirtyChange }) => {
   const [title, setTitle] = useState(selectedReview ? selectedReview.title: '');
   const [body, setBody] = useState(selectedReview ? selectedReview.body: '장점: \n\n단점: \n\n한줄평: ');
   const [addressDetail, setAddressDetail] = useState(selectedReview ? selectedReview.addressDetail: '');
@@ -37,7 +37,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
     }else{
       setLastDate(new Date().toISOString().split('T')[0]);
     }
-    setShowPicker({ show: true, field })
+    setShowPicker({ show: true, field });
   };
 
   const isFirstRender = useRef(true);
@@ -49,6 +49,11 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
   const contractDateInputRef = useRef();
   const fromDateInputRef = useRef();
   const toDateInputRef = useRef();
+
+  const handleInputChange = (setter) => (value) => {
+    setter(value);
+    onDirtyChange(true);
+  };
 
   useEffect(() => {
     titleInputRef.current?.focus();
@@ -113,6 +118,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
       if (showPicker.field === 'fromDate') setFromDate(formattedDate);
       if (showPicker.field === 'toDate') setToDate(formattedDate);
     }
+    onDirtyChange(true);
   };
 
   const save = async () => {
@@ -133,6 +139,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
     };
     setIsFinished(false);
     setIsLoading(true);
+    onDirtyChange(false);
     if(selectedReview){
       payload.id = selectedReview.id;
       editReview(payload, setIsLoading, setIsFinished);
@@ -150,7 +157,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           label="제목"
           value={title}
           mode="outlined"
-          onChangeText={setTitle}
+          onChangeText={handleInputChange(setTitle)}
           ref={titleInputRef}
           style={globalStyle.textInput}
         />
@@ -160,7 +167,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           mode="outlined"
           multiline
           numberOfLines={6}
-          onChangeText={setBody}
+          onChangeText={handleInputChange(setBody)}
           ref={bodyInputRef}
           style={globalStyle.textInput}
         />
@@ -175,14 +182,14 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           label="상세 주소"
           value={addressDetail}
           mode="outlined"
-          onChangeText={setAddressDetail}
+          onChangeText={handleInputChange(setAddressDetail)}
           ref={addressDetailInputRef}
           style={globalStyle.textInput}
         />
         <Text style={globalStyle.label} >계약유형</Text>
         <RadioButton.Group
           onValueChange={(value) => {
-            setContractType(value)}}
+            handleInputChange(setContractType)(value)}}
           value={contractType} 
         >
           <View style={globalStyle.horizontalRadioGroup}>
@@ -198,7 +205,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           keyboardType="numeric"
           onChangeText={(text) => {
             const numericValue = text.replace(/[^0-9]/g, '');
-            setDeposit(numericValue === '' ? 0 : parseInt(numericValue, 10));
+            handleInputChange(setDeposit)(numericValue === '' ? 0 : parseInt(numericValue, 10));
           }}
           ref={depositInputRef}
           right={<TextInput.Affix text="만원" />}
@@ -227,7 +234,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
         />
         <Text style={globalStyle.label} >보증금반환지연</Text>
         <RadioButton.Group
-          onValueChange={value => setIsReturnDelayed(value)}
+          onValueChange={value => handleInputChange(setIsReturnDelayed)(value)}
           value={isReturnDelayed} 
         >
           <View style={globalStyle.horizontalRadioGroup}>
@@ -237,7 +244,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
         </RadioButton.Group>
         <Text style={globalStyle.label} >평점</Text>
         <RadioButton.Group
-          onValueChange={value => setRating(value)}
+          onValueChange={value => handleInputChange(setRating)(value)}
           value={rating} 
         >
           <View style={globalStyle.horizontalRadioGroup}>

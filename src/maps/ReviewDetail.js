@@ -5,7 +5,7 @@ import RegisterReview from './RegisterReview';
 import { findReviewById, deleteReview } from '../utils/tokenUtils';
 import authStore from '../utils/authStore';
 import globalStyle from "../styles/globalStyle"
-import { FlashList } from "@shopify/flash-list";
+import customAlert from '../utils/customAlert';
 
 export default class ReviewDetail extends Component {
   constructor(props){
@@ -14,7 +14,8 @@ export default class ReviewDetail extends Component {
       selectedItem: this.props.review,
       isAuthenticated: false,
       isInsertVisible: false,
-      isFinished: true
+      isFinished: true,
+      isFormDirty: false
     };
   }
 
@@ -32,7 +33,19 @@ export default class ReviewDetail extends Component {
   }
 
   toggleInsert = (_isInsertVisible) => {
-    this.setState({isInsertVisible: _isInsertVisible});
+    if (!_isInsertVisible && this.state.isFormDirty) {
+      customAlert(
+        '경고',
+        '작성 중인 내용이 사라집니다. 닫으시겠습니까?',
+        [
+          {text: '닫기', onPress: () => this.setState({ isInsertVisible: false, isFormDirty: false })},
+          {text: '취소', onPress: () => null},
+        ],
+        { cancelable: true }
+      );
+    } else {
+      this.setState({isInsertVisible: _isInsertVisible});
+    }
   };
 
   setIsFinished = (_isFinished) => {
@@ -71,7 +84,10 @@ export default class ReviewDetail extends Component {
         <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}} onPress={() => this.toggleInsert(false)}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={globalStyle.modalWrapperStyle}>
-              <RegisterReview toggleInsert={this.toggleInsert} selectedReview={this.state.selectedItem}/>
+              <RegisterReview 
+                toggleInsert={this.toggleInsert}
+                selectedReview={this.state.selectedItem}
+                onDirtyChange={(isDirty) => this.setState({ isFormDirty: isDirty })}/>
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>

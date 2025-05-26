@@ -14,7 +14,8 @@ import { findReviews } from '../utils/tokenUtils';
 import ReviewDetail from './ReviewDetail';
 import RegisterReview from './RegisterReview';
 import authStore from '../utils/authStore';
-import globalStyle from "../styles/globalStyle"
+import globalStyle from "../styles/globalStyle";
+import customAlert from '../utils/customAlert';
 
 class ReviewList extends Component{
   constructor(props){
@@ -25,7 +26,8 @@ class ReviewList extends Component{
       isReviewListVisible: true,
       isDetailVisible: false,
       isInsertVisible: false,
-      isAuthenticated: false
+      isAuthenticated: false,
+      isFormDirty: false,
     };
   }
 
@@ -43,7 +45,19 @@ class ReviewList extends Component{
   };
 
   toggleInsert = (_isInsertVisible) => {
-    this.setState({isInsertVisible: _isInsertVisible});
+    if (!_isInsertVisible && this.state.isFormDirty) {
+      customAlert(
+        '경고',
+        '작성 중인 내용이 사라집니다. 닫으시겠습니까?',
+        [
+          {text: '닫기', onPress: () => this.setState({ isInsertVisible: false, isFormDirty: false })},
+          {text: '취소', onPress: () => null},
+        ],
+        { cancelable: true }
+      );
+    } else {
+      this.setState({isInsertVisible: _isInsertVisible});
+    }
   };
 
   selectReview = (review) => {
@@ -148,7 +162,10 @@ class ReviewList extends Component{
         <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}} onPress={() => this.toggleInsert(false)}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={globalStyle.modalWrapperStyle}>
-              <RegisterReview toggleInsert={this.toggleInsert} selectedMarker={this.props.selectedMarker}/>
+              <RegisterReview 
+                toggleInsert={this.toggleInsert}
+                selectedMarker={this.props.selectedMarker}
+                onDirtyChange={(isDirty) => this.setState({ isFormDirty: isDirty })}/>
             </View>
           </TouchableWithoutFeedback>
         </TouchableOpacity>

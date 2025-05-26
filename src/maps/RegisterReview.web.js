@@ -5,7 +5,7 @@ import authStore from '../utils/authStore';
 import { saveReview, editReview } from '../utils/tokenUtils';
 import globalStyle from "../styles/globalStyle"
 
-const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
+const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview, onDirtyChange }) => {
   const [title, setTitle] = useState(selectedReview ? selectedReview.title: '');
   const [body, setBody] = useState(selectedReview ? selectedReview.body: '장점: \n\n단점: \n\n한줄평: ');
   const [addressDetail, setAddressDetail] = useState(selectedReview ? selectedReview.addressDetail: '');
@@ -19,7 +19,6 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
   const [toDate, setToDate] = useState(selectedReview? selectedReview.toDate.split('T')[0]: '');
   const [toDateMask, setToDateMask] = useState(selectedReview? selectedReview.toDate.split('T')[0]: '');
   const [rating, setRating] = useState(selectedReview ? selectedReview.rating: 1);
-  const [lastDate, setLastDate] = useState('');
 
   const [errors, setErrors] = useState({}); 
   const [isFormValid, setIsFormValid] = useState(false);
@@ -34,12 +33,9 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
     setShowPicker({ show: false, field: '' });
   };
 
-  const handleDateChange = (e) => {
-    const selectedDate = e.target.value; // Format: YYYY-MM-DD
-    if (showPicker.field === 'contractDate') setContractDate(selectedDate);
-    if (showPicker.field === 'fromDate') setFromDate(selectedDate);
-    if (showPicker.field === 'toDate') setToDate(selectedDate);
-    closePicker();
+  const handleInputChange = (setter) => (value) => {
+    setter(value);
+    onDirtyChange(true);
   };
 
   const isFirstRender = useRef(true);
@@ -69,7 +65,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
     if(isFinished & !isLoading){
       toggleInsert(false);
     }
-  }, [isFinished, isLoading])
+  }, [isFinished, isLoading]);
 
   function onDateChanged(value, setValue, setMask) {
     if(value.replace(/[^0-9]/g, '').length > 8){
@@ -80,6 +76,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
     value = value.replace(/^(\d{0,4})(\d{0,2})(\d{0,2})$/g, '$1-$2-$3')
       .replace(/(-{1,2})$/g, '');
     setMask(value);
+    onDirtyChange(true);
   };
 
   function validDate(inputDate) {
@@ -180,6 +177,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
     };
     setIsFinished(false);
     setIsLoading(true);
+    onDirtyChange(false);
     if(selectedReview){
       payload.id = selectedReview.id;
       editReview(payload, setIsLoading, setIsFinished);
@@ -197,7 +195,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           label="제목"
           value={title}
           mode="outlined"
-          onChangeText={setTitle}
+          onChangeText={handleInputChange(setTitle)}
           ref={titleInputRef}
           style={globalStyle.textInput}
         />
@@ -207,7 +205,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           mode="outlined"
           multiline
           numberOfLines={6}
-          onChangeText={setBody}
+          onChangeText={handleInputChange(setBody)}
           ref={bodyInputRef}
           style={globalStyle.textInput}
         />
@@ -222,14 +220,14 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           label="상세 주소"
           value={addressDetail}
           mode="outlined"
-          onChangeText={setAddressDetail}
+          onChangeText={handleInputChange(setAddressDetail)}
           ref={addressDetailInputRef}
           style={globalStyle.textInput}
         />
         <Text style={globalStyle.label} >계약유형</Text>
         <RadioButton.Group
           onValueChange={(value) => {
-            setContractType(value)}}
+            handleInputChange(setContractType)(value)}}
           value={contractType} 
         >
           <View style={globalStyle.horizontalRadioGroup}>
@@ -245,7 +243,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
           keyboardType="numeric"
           onChangeText={(text) => {
             const numericValue = text.replace(/[^0-9]/g, '');
-            setDeposit(numericValue === '' ? 0 : parseInt(numericValue, 10));
+            handleInputChange(setDeposit)(numericValue === '' ? 0 : parseInt(numericValue, 10));
           }}
           ref={depositInputRef}
           right={<TextInput.Affix text="만원" />}
@@ -256,7 +254,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
         {renderDateInput('거주종료일', toDate, setToDate, toDateMask, setToDateMask)}
         <Text style={globalStyle.label} >보증금반환지연</Text>
         <RadioButton.Group
-          onValueChange={value => setIsReturnDelayed(value)}
+          onValueChange={value => handleInputChange(setIsReturnDelayed)(value)}
           value={isReturnDelayed} 
         >
           <View style={globalStyle.horizontalRadioGroup}>
@@ -266,7 +264,7 @@ const RegisterReview = ({ toggleInsert, selectedMarker, selectedReview }) => {
         </RadioButton.Group>
         <Text style={globalStyle.label} >평점</Text>
         <RadioButton.Group
-          onValueChange={value => setRating(value)}
+          onValueChange={value => handleInputChange(setRating)(value)}
           value={rating} 
         >
           <View style={globalStyle.horizontalRadioGroup}>
