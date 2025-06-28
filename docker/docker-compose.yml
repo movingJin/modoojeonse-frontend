@@ -1,9 +1,10 @@
 version: "3"
 services:
   prod:
+    container_name: "modoojeonse-front-prod"
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: docker/Dockerfile
     ports:
       - 22733:22733
     environment:
