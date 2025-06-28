@@ -57,7 +57,7 @@ jobs:
         key: ${{secrets.PROD_PRIVATE_KEY}}
         port: ${{secrets.PROD_PORT}}
         script: |
-          cd ${{ format('{0}/modoojeonse-front', secrets.SERVICE_ROOT) }}
+          cd ${{ format('{0}/modoojeonse-front/docker', secrets.SERVICE_ROOT) }}
           PATH="/var/packages/ContainerManager/target/usr/bin/:$PATH"
           pwd
           docker-compose build
