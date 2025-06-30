@@ -50,5 +50,5 @@ Use Docker Compose to build and run the deployment:
 ```
 $ cd docker
 $ docker-compose build
-$ docker-compose up -d
+$ docker-compose -p modoojeonse-front up -d
 ```
