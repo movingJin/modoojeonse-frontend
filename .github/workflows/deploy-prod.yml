@@ -62,5 +62,5 @@ jobs:
           pwd
           docker-compose build
           docker-compose down
-          docker-compose up -d
+          docker-compose -p modoojeonse-front up -d
           docker image prune -f
