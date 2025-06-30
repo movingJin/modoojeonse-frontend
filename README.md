@@ -48,7 +48,6 @@ $ npm run build-react
 Use Docker Compose to build and run the deployment:
 
 ```
-$ cd docker
 $ docker-compose build
-$ docker-compose -p modoojeonse-front up -d
+$ docker-compose up -d
 ```

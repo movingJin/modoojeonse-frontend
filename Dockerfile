@@ -20,7 +20,7 @@ RUN chmod -R 755 build
 RUN rm /etc/nginx/conf.d/default.conf
 
 # host pc 의 nginx.conf 를 아래 경로에 복사
-COPY ./docker/nginx.conf /etc/nginx/conf.d
+COPY ./nginx.conf /etc/nginx/conf.d
 
 # 80 포트 오픈
 EXPOSE 22733
