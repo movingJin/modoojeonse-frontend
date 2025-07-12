@@ -9,3 +9,8 @@ services:
     environment:
       - TZ=Asia/Seoul
     stdin_open: true # docker run의 -i 옵션. react 한정으로 필요함.
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
