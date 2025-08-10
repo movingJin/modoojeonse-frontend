@@ -6,13 +6,17 @@ import {
     Modal,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Alert,
+    Platform,
     StyleSheet
 } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { signOut } from '../utils/tokenUtils';
 import authStore from '../utils/authStore';
 import WithdrawPage from '../auth/WithdrawPage';
+import { handleGoogleLogin } from '../utils/tokenUtils.web';
+import Icon from 'react-native-vector-icons/AntDesign';
+import globalStyle from "../styles/globalStyle"
+import { Button } from 'react-native-paper';
 
 export default class SettingPage extends Component{
     constructor(props){
@@ -140,6 +144,44 @@ export default class SettingPage extends Component{
                         onPress={this._goToLogIn.bind(this)}>
                         <Text>🔑 로그인</Text>
                     </TouchableOpacity>
+                    {Platform.OS === 'web' ? (
+                        // <Button
+                        // style={[globalStyle.commonButton, {
+                        //     width: '100%',
+                        //     marginVertical: 10,
+                        //     backgroundColor: '#ffffff',
+                        //     borderWidth: 1,
+                        //     borderColor: '#dadce0',
+                        //     elevation: 0
+                        // }]}
+                        // labelStyle={{
+                        //     color: '#757575',
+                        //     fontSize: 16,
+                        //     marginLeft: 8
+                        // }}
+                        // icon={() => (
+                        //     <Icon 
+                        //     name="google" 
+                        //     size={24} 
+                        //     color="#4285F4"
+                        //     />
+                        // )}
+                        // mode="contained"
+                        // onPress={handleGoogleLogin}>
+                        // Google로 로그인
+                        // </Button>
+                        <TouchableOpacity 
+                            style={[styles.wrapButton, styles.googleButton]}
+                            onPress={handleGoogleLogin}>
+                            <Icon 
+                                name="google"
+                                size={24}
+                                color="#4285F4"
+                                style={styles.googleIcon}
+                            />
+                            <Text style={styles.googleText}>Google로 로그인</Text>
+                        </TouchableOpacity>
+                    ) : null}
                     <TouchableOpacity 
                         style={styles.wrapButton}
                         onPress={this._goSignUp.bind(this)}>
@@ -162,6 +204,7 @@ const styles = StyleSheet.create({
         width: wp('100%'),
         height: hp('8%'),
         paddingLeft: wp('2%'),
+        alignItems: 'center',
         justifyContent: 'center',
         borderBottomWidth: 0.5,
         borderColor: '#ccc',
@@ -177,5 +220,20 @@ const styles = StyleSheet.create({
         padding: 20,
         width: '80%',
         height: '40%'
+    },
+    googleButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        borderWidth: 1,
+        borderColor: '#dadce0',
+    },
+    googleIcon: {
+        marginRight: 10,
+        marginLeft: 10,
+    },
+    googleText: {
+        color: '#757575',
+        fontSize: 16,
     }
 })

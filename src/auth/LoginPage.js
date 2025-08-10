@@ -1,8 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { signIn } from '../utils/tokenUtils';
 import { Text, TextInput, Button } from 'react-native-paper';
@@ -43,19 +40,6 @@ const LoginPage = ({ navigation }) => {
     setIsFormValid(Object.keys(errors).length === 0); 
   };
 
-  const handleGoogleLogin = () => {
-    if (Platform.OS === 'web') {
-      // Google OAuth2 인증 페이지로 리다이렉트
-      const GOOGLE_AUTH_URL = `${process.env.API_SERVER_URL}/oauth2/authorization/google`;
-      const REDIRECT_URI = `${process.env.API_SERVER_URL}/login/oauth2/code/google`;
-      
-      const googleLoginUrl = `${GOOGLE_AUTH_URL}?redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
-      window.location.href = googleLoginUrl;
-    } else {
-
-    }
-  };
-
   return (
     <View>
       <TextInput
@@ -79,31 +63,6 @@ const LoginPage = ({ navigation }) => {
         disabled={!isFormValid}
         onPress={() => signIn(email, password, navigation)} >
         로그인
-      </Button>
-      <Button
-        style={[globalStyle.commonButton, {
-          width: '100%',
-          marginVertical: 10,
-          backgroundColor: '#ffffff',
-          borderWidth: 1,
-          borderColor: '#dadce0',
-          elevation: 0
-        }]}
-        labelStyle={{
-          color: '#757575',
-          fontSize: 16,
-          marginLeft: 8
-        }}
-        icon={() => (
-          <Icon 
-            name="google" 
-            size={24} 
-            color="#4285F4"
-          />
-        )}
-        mode="contained"
-        onPress={handleGoogleLogin}>
-        Google로 로그인
       </Button>
       <View style={styles.buttonContainer}>
         <Button

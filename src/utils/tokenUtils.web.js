@@ -50,6 +50,15 @@ export const signIn = async (email, password, navigation) => {
     }
 };
 
+export  const handleGoogleLogin = () => {
+    // Google OAuth2 인증 페이지로 리다이렉트
+    const GOOGLE_AUTH_URL = `${process.env.API_SERVER_URL}/oauth2/authorization/google`;
+    const REDIRECT_URI = `${process.env.API_SERVER_URL}/login/oauth2/code/google`;
+    
+    const googleLoginUrl = `${GOOGLE_AUTH_URL}?redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    window.location.href = googleLoginUrl;
+  };
+
 export const signInOAuth = async (email, code, navigation) => {
     try {
       const response = await axios.post(`${URL}/oauth/get-token`, { email, code });
