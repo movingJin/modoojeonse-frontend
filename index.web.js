@@ -3,21 +3,30 @@ import App from './App.web';
 import { name as appName } from './app.json';
 import { Platform } from 'react-native';
 
-if (Platform.OS === 'web') {
-  import('react-native-vector-icons/Fonts/MaterialIcons.ttf')
-    .then((MaterialIcons) => {
-      const style = document.createElement('style');
-      style.type = 'text/css';
-      style.appendChild(document.createTextNode(`
+
+const loadFont = async (fontName) => {
+  try {
+    const font = await import(`react-native-vector-icons/Fonts/${fontName}.ttf`);
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.appendChild(
+      document.createTextNode(`
         @font-face {
-          src: url(${MaterialIcons.default});
-          font-family: MaterialIcons;
+          src: url(${font.default});
+          font-family: ${fontName};
         }
-      `));
-      document.head.appendChild(style);
-    })
-    .catch((error) => console.error('Error loading fonts:', error));
-}
+      `)
+    );
+    document.head.appendChild(style);
+  } catch (error) {
+    console.error(`Error loading ${fontName} font:`, error);
+  }
+};
+
+// 필요한 폰트들을 배열로 관리
+const fonts = ['MaterialIcons', 'AntDesign'];
+fonts.forEach(loadFont);
+
 
 AppRegistry.registerComponent(appName, () => App);
 

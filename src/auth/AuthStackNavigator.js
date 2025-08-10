@@ -13,6 +13,7 @@ import HomeTab from '../HomeTab';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SettingPage from '../settings/SettingPage'
 import About from '../settings/About';
+import OAuth2RedirectHandler from './OAuth2RedirectHandler';
 // import { IconButton } from 'react-native-paper';
 
 const Stack = createStackNavigator();
@@ -49,6 +50,7 @@ const AuthStackNavigator = () => {
         <Stack.Screen name="ModifyInfo" component={ModifyInfoPage} options={{title: '회원정보 수정'}}/>
         <Stack.Screen name="ModifyPwd" component={ModifyPwdPage} options={{title: '비밀번호 재설정'}}/>
       <Stack.Screen name="Settings" component={SettingPage} />
+      <Stack.Screen name="OAuth2Redirect" component={OAuth2RedirectHandler} options={{headerShown: false}} />
       <Stack.Screen name="About" component={About} />
     </Stack.Navigator>
   );

@@ -50,6 +50,43 @@ export const signIn = async (email, password, navigation) => {
     }
 };
 
+export const signInOAuth = async (email, code, navigation) => {
+    try {
+      const response = await axios.post(`${URL}/oauth/get-token`, { email, code });
+      console.log(response.data);
+      if (response.status === 200){
+        setAccessToken(response.data.tokens.accessToken);
+        setRefreshToken(response.data.tokens.refreshToken);
+        setEmail(response.data.email);
+        setName(response.data.name);
+        setPhone(response.data.phone);
+        setRoles(response.data.roles);
+ 
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({}, '', '/');
+        }
+        navigation.navigate('Main');
+      }
+    } catch (error) {
+      console.log(error);
+      if(error.response.status === 401){
+        customAlert(
+          "로그인실패",
+          "인증에 실패했습니다.",
+          null
+        );
+      }
+      else{
+        console.log(error.response);
+        customAlert(
+          "로그인실패",
+          "Unknown error",
+          null
+        );
+      }
+    }
+};
+
 export const signOut = async (setIsAuthenticated) => {
   const accessToken = authStore.getState().accessToken;
   console.log(accessToken);

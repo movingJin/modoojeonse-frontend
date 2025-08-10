@@ -29,11 +29,31 @@ L.Icon.Default.mergeOptions({
 
 const MapRefresher = () => {
   const map = useMap();
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-  }, [map]);
+    // 컴포넌트가 마운트되었음을 표시
+    setIsMounted(true);
+
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (map && isMounted) {
+      // DOM이 완전히 렌더링될 때까지 충분히 기다림
+      const timer = setTimeout(() => {
+        try {
+          map.invalidateSize();
+        } catch (error) {
+          console.error('Map invalidateSize error:', error);
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [map, isMounted]);
 
   return null;
 };
